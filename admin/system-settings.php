@@ -41,7 +41,7 @@
                                 <textarea class="form-control" name="aboutContent" rows="3"><?= $row['aboutcontent'] ?></textarea>
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <input type="submit" class="btn btn-primary" type="submit" name="submit" value="Save">
+                                <input type="submit" class="btn btn-primary" name="submit" value="Save">
                             </div>
                           <?php 
                           endwhile;
@@ -61,9 +61,9 @@ $(document).ready(function(e) {
     $('#systemForm').on('submit',function(e) {
       e.preventDefault();
 
-        // if(!systemname || !email || !contact || !logo.value || !aboutimage.value || !aboutcontent) {
-        //     console.log('Please input all details.');
-        // } else {
+        if(!systemname || !email || !contact || !logo.value || !aboutimage.value || !aboutcontent) {
+            console.log('Please input all details.');
+        } else {
             $.ajax({
                 type: 'POST',
                 url: 'function/action.php?action=System',
@@ -79,7 +79,7 @@ $(document).ready(function(e) {
                     console.log(data);
                 }
             });
-        // }
+        }
     });
 });
 

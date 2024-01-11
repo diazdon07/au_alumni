@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         const alumniCardHTML = `
+        <div class="col-auto">
           <div class="card" style="width: 18rem;">
             <div class="card-body">
               <img class="card-img-top" src="${image}">
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <!-- Include other alumni details as needed -->
             </div>
           </div>
+        </div>
         `;
   
         alumniContent.insertAdjacentHTML('beforeend', alumniCardHTML);
