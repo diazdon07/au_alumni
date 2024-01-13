@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(alumni.photo === '' || alumni.photo === null){
           var image = 'image/image-placeholder.png';
         }else{
-          var image = 'upload/'+alumni.photo;
+          var image = alumni.photo;
         }
         
         const alumniCardHTML = `
@@ -138,9 +138,9 @@ document.addEventListener('DOMContentLoaded', function () {
   
       // Display the filtered results
       displayFilteredResults(filteredAlumni);
-    })
+    });
   
     // Call the fetch function initially to load all alumni data
-    fetchCoursesData()
+    fetchCoursesData();
     fetchAlumniData();
-})
+});

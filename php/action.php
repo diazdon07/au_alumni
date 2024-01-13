@@ -8,86 +8,106 @@ if(isset($_GET['action'])){
 
     //Login
     if($action === 'login'){
-        try{
-            $signInResult = $auth->signInWithEmailAndPassword($email, $password);
-            $data = $signInResult->data();
+
+            $md5Pass = md5($password);
+            $sqlUser = "SELECT * FROM `user` WHERE email = ? AND password = ?";
+            $sqlCheck = $conn->prepare($sqlUser);
+            $sqlCheck->bind_param("ss", $email, $md5Pass);
+
+            if($sqlCheck->execute()){
+                $result = $sqlCheck->get_result();
+
+                if($result->num_rows > 0){
+                    $data = $result->fetch_assoc();
+                    $uuid = $data['uid'];
+                    $email = $data['email'];
+                    $mobile = $data['contact'];
+                    $type = $data['type'];
+
+                    if($type === '0'){
+                        if($userType === 'student'){
+
+                            $sql = "SELECT * FROM `students` WHERE uid = '$uuid'";
+                            $stmt = mysqli_query($conn, $sql);
             
-            $uuid = $data['localId'];
-            $user = $auth->getUser($uuid);
-
-            if($userType === 'student'){
-        
-                if($signInResult){
-                    $email = $user->email;
-                    $mobile = $user->phoneNumber;
-                    $sql = "SELECT * FROM students WHERE uid = '$uuid'";
-                    $stmt = mysqli_query($conn, $sql);
-    
-                    if (mysqli_num_rows($stmt) > 0) {
-                        while($row = mysqli_fetch_assoc($stmt)) {   
-                        $dataArray = array(
-                            'id' => $row["id"],
-                            'studentno' => $row["student_number"],
-                            'firstname' => $row["firstname"],
-                            'middlename' => $row["middlename"],
-                            'lastname' => $row["lastname"],
-                            'gender' => $row["gender"],
-                            'address' => $row["address"],
-                            'city' => $row["city"],
-                            'course' => $row["course"],
-                            'batch' => $row["batch"],
-                            'photo' => $row["photo"],
-                            'email' => $email,
-                            'contact' => $mobile
-                        );
-                        echo json_encode($dataArray);
-                        }
-                    }else{
-                        echo json_encode(array('error' => 'not functioning'));
-                    }
-                }
-            }else if($userType === 'admin'){
-                if($signInResult){
-                    $email = $user->email;
-                    $mobile = $user->phoneNumber;
-                    $sql = "SELECT * FROM admins WHERE uid = '$uuid'";
-                    $stmt = mysqli_query($conn, $sql);
-
-                    if($stmt){
-                        if (mysqli_num_rows($stmt) > 0) {
-                        while($row = mysqli_fetch_assoc($stmt)) {   
-                        $dataArray = array(
-                            'id' => $row["id"],
-                            'firstname' => $row["firstname"],
-                            'middlename' => $row["middlename"],
-                            'lastname' => $row["lastname"],
-                            'gender' => $row["gender"],
-                            'photo'=> $row["photo"],
-                            'email' => $email,
-                            'contact' => $mobile,
-                            'userType' => $userType
-                        );
-                        echo json_encode($dataArray);
-                        }
+                            if (mysqli_num_rows($stmt) > 0) {
+                                while($row = mysqli_fetch_assoc($stmt)) {   
+                                    if($row["gender"] === '0'){
+                                        $gender = 'Male';
+                                    }else{
+                                        $gender = 'Female';
+                                    }
+                                    $dataArray = array(
+                                        'id' => $row["id"],
+                                        'studentno' => $row["student_number"],
+                                        'firstname' => $row["firstname"],
+                                        'middlename' => $row["middlename"],
+                                        'lastname' => $row["lastname"],
+                                        'gender' => $gender,
+                                        'address' => $row["address"],
+                                        'city' => $row["city"],
+                                        'course' => $row["course"],
+                                        'batch' => $row["batch"],
+                                        'photo' => $row["photo"],
+                                        'email' => $email,
+                                        'contact' => $mobile
+                                    );
+                                    echo json_encode($dataArray);
+                                }
+                            }else{
+                                echo json_encode(array('error' => 'Invalid student profile data.'));
+                            }
                         }else{
-                            echo json_encode(array('error' => 'not functioning'));
+                            echo json_encode(array('error' => 'Login Failed.'));
                         }
                     }else{
-                        echo json_encode(array('error' => 'Data Not Found.'));
+                        if($userType === 'admin'){
+
+                            $sql = "SELECT * FROM `admins` WHERE uid = '$uuid'";
+                            $stmt = mysqli_query($conn, $sql);
+        
+                            if (mysqli_num_rows($stmt) > 0) {
+                                while($row = mysqli_fetch_assoc($stmt)) {   
+
+                                    if($row["gender"] === '0'){
+                                        $gender = 'Male';
+                                    }else{
+                                        $gender = 'Female';
+                                    }
+
+                                    if($row["imgType"]!==null&&$row["imgData"]!==null){
+                                        $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+                                    }else{
+                                        $photo = null;
+                                    }
+
+                                    $dataArray = array(
+                                        'id' => $row["id"],
+                                        'firstname' => $row["firstname"],
+                                        'middlename' => $row["middlename"],
+                                        'lastname' => $row["lastname"],
+                                        'gender' => $gender,
+                                        'photo'=> $photo,
+                                        'email' => $email,
+                                        'contact' => $mobile,
+                                        'userType' => $type
+                                    );
+                                echo json_encode($dataArray);
+                                }
+                            }else{
+                                echo json_encode(array('error' => 'Invalid admin profile data.'));
+                            }
+                        }else{
+                            echo json_encode(array('error' => 'Invalid Login.'));
+                        }
                     }
+                }else{
+                    echo json_encode(array('error' => 'Invalid email or password'));
                 }
+            }else{
+                echo json_encode(array('error' => $sqlCheck->error));
             }
 
-        }catch(InvalidPassword $e){
-            echo json_encode(array('error' => $e->getMessage()));
-        }catch(UserNotFound $e){
-            echo json_encode(array('error' => $e->getMessage()));
-        }catch(AuthError $e){
-            echo json_encode(array('error' => $e->getMessage()));
-        }catch(\Exception $e){
-            echo json_encode(array('error' => $e->getMessage()));
-        }
-        
     }
     //Registration
     if($action === 'register'){
@@ -148,32 +168,46 @@ if(isset($_GET['action'])){
             }
         }
     }
-    mysqli_close($conn);
-};
+    // create comments
+    if($action === 'Comments'){
+        echo json_encode(array('error'=> $create ));
+        // $stmt = $conn->prepare('INSERT INTO `forum_comments` (forumId, comments, userId) VALUES (?,?,?)');
+        // $stmt->bind_param('sss', $topic, $content, $create);
+        // if($stmt->execute()){
+        //     echo json_encode('Comment posted.');
+        //     mysqli_stmt_close($stmt);
+        // }
+    }
+    if($action === 'test'){
+        if(isset($_FILES['userImage'])&&is_uploaded_file($_FILES['userImage']['tmp_name'])){
+            $imgData = file_get_contents($_FILES['userImage']['tmp_name']);
+            $imgType = $_FILES['userImage']['type'];
 
-function fileUpload($file,$path){
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($imgType, $allowedTypes)) {
+                echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            }
 
-    $uploadDir = $path.'/';
-    $allowTypes = array('jpg','png','jpeg');
-    $uploadedFile = '';
+            $sql = "INSERT INTO `test` (imgType, imgData) VALUES(?, ?)";
+            $statement = $conn->prepare($sql);
 
-    if(!empty($file)){
-        $fileName = basename($file['name']);
-        $targetPath = $uploadDir . $fileName;
-        $fileType = pathinfo($targetPath, PATHINFO_EXTENSION);
-
-        if(in_array($fileType, $allowTypes)){
-            if(move_uploaded_file($file["tmp_name"], '../'.$path.'/'.$fileName)){
-                $uploadedFile = $fileName;
-                return $uploadedFile;
-            }else{
-                return 0;
+            if ($statement) {
+                $statement->bind_param('ss', $imgType, $imgData);
+                if ($statement->execute()) {
+                    echo json_encode('Successful Upload.');
+                } else {
+                    echo json_encode(array('error' => 'Statement error: ' . $statement->error));
+                }
+                $statement->close();
+            } else {
+                echo json_encode(array('error' => 'Database error: ' . $conn->error));
             }
         }
-    }else{
-        return null;
     }
-}
+
+    mysqli_close($conn);
+};
 
 function generateUid($email) {
 

@@ -144,14 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(data => {
       updateAlumniData(data);
     })
-    .catch(error => console.error('Error fetching courses data:', error));
+    .catch(error => console.error('Error fetching alumni data:', error));
 
     fetch('../php/jobs.php')
     .then(response => response.json()) // Assuming the PHP returns JSON data
     .then(data => {
       updateJobData(data);
     })
-    .catch(error => console.error('Error fetching courses data:', error));
+    .catch(error => console.error('Error fetching jobs data:', error));
   }
 
   function updateDatabaseSource(){

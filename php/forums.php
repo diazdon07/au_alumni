@@ -7,7 +7,19 @@ $data = [];
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        if($row["imgType"]!==null&&$row["imgData"]!==null){
+            $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+        }else{
+            $photo = null;
+        }
+        $data[] = array(
+            'id' => $row['id'],
+            'topic' => $row['topic'],
+            'photo' => $photo,
+            'content' => $row['content'],
+            'created' => $row['created'],
+            'timestamp' => $row['timestamp']
+        );
     }
     $result->free();
 }

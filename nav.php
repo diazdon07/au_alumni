@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
       <h2 class="text-warning">
-        <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" class="imgLogo" alt="logo" width="40rem">
+        <img class="imgLogo" alt="logo" width="40rem">
         <span class="systemName"></span>
       </h2>
       <h6 class="text-white">Alumni Management System</h6>
@@ -58,8 +58,8 @@ window.onload = () => {
         profileForm.classList.add("d-block");
         profileForm.classList.remove("d-none");
         profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
-        if(user.photo !== ''){
-        profileImage.src = `upload/${user.photo}`
+        if(user.photo !== null){
+        profileImage.src = user.photo
         }
         logout.addEventListener('click', () => {
             sessionStorage.clear();

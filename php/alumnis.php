@@ -7,6 +7,11 @@ $data = array();
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+        if($row["imgType"]!==null&&$row["imgData"]!==null){
+            $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+        }else{
+            $photo = null;
+        }
         $data[] = array( 
             'id' => $row['id'],
             'student_number' => $row['student_number'],
@@ -18,7 +23,7 @@ if ($result->num_rows > 0) {
             'city' => $row['city'],
             'course' => $row['course'],
             'batch' => $row['batch'],
-            'photo' => $row['photo']
+            'photo' => $photo
         );
     }
 }

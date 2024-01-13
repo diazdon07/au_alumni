@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
           aboutimage: system.aboutimage,
           aboutcontent: system.aboutcontent
         });
+        
       });
   
       updateSource();
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Use the received data as the settingData
         updatesystemData(data);
       })
-      .catch(error => console.error('Error fetching courses data:', error));
+      .catch(error => console.error('Error fetching system data:', error));
     }
   
     function updateSource() {
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (systemData.length === 0 || systemData[0].logo === null) {
           img.src = defaultImageSrc;
         } else {
-          img.src = `image/${systemData[0].logo}`;
+          img.src = systemData[0].logo;
         }
       });
 
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (systemData.length === 0 || systemData[0].aboutimage === null) {
           aboutImg.src = defaultImageSrc;
         } else {
-          aboutImg.src = `image/${systemData[0].aboutimage}`;
+          aboutImg.src = systemData[0].aboutimage;
         }
       });
 
