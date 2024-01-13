@@ -26,11 +26,11 @@
             $active_class = ($item_counter == 0) ? 'active' : ''; // Add 'active' class to first item
       ?>
         <div class="carousel-item <?= $active_class ?>" data-bs-interval="2000">
-            <img class="img-fluid d-block w-30 mx-auto" src="image/<?php 
-            if($row['image']!==null){
-              echo $row['image'];
+            <img class="img-fluid d-block w-30 mx-auto" src="<?php 
+            if($row['imgData']!==null&&$row['imgType']!==null){
+              echo 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
             }else{
-              echo 'image-placeholder.png';
+              echo 'image/image-placeholder.png';
             } 
             ?>" alt="Slide <?= $item_counter + 1 ?>">
             <div class="carousel-caption d-none d-md-block">
@@ -166,26 +166,9 @@
     <!-- Forum Tabs  -->
     <div class="tab-pane fade" id="forum" role="tabpanel" aria-labelledby="forum-tab">
       <!-- forum table -->
-      <div class="main">
-        <div class="row">
-          <div class="col-3">
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="addonSearch"><i class="fa fa-search"></i></span>
-              <input type="text" name="search" class="form-control" id="search" aria-describedby="addonSearch" placeholder="Search...">
-            </div>
-          </div>
-          <div class="col-2">
-            <select name="" class="form-control" id="filter">
-              <option hidden>Filter By:</option>
-              <option value="">Popular</option>
-              <option value="">Latest</option>
-            </select>
-          </div>
-          <div class="col-2">
-            <button type="button" class="btn btn-primary">Search</button>
-          </div>
-        </div>
-        <table class="table table-hover">
+      <input type="hidden" name="create" id="userS">
+      <div id="main">
+        <table id="forumTable" class="table table-hover">
           <thead>
             <th scope="col" class="text-center">Topics</th>
             <th scope="col" class="text-center" style="width: 10rem;">Replies</th>
@@ -199,7 +182,6 @@
           <div class="row g-3">
             <div class="col-8">
               <div class="mb-3">
-                <input type="hidden" name="create" id="userS">
                 <input type="text" name="topic" id="topicId" class="form-control" placeholder="Topic Title">
               </div>
               <div class="mb-3">
@@ -217,44 +199,8 @@
         </form>
       </div>
       <!-- post view -->
-      <div class="post">
-        <div class="mb-3">
-          <a href="#" class="ptag text-muted"><i class="fa fa-chevron-left"></i> Back</a>
-        </div>
-        <div class="mb-3">
-          <h2><i class="fa fa-book"></i>Treanding issue</h2>
-          <p>By Admin | Posted Date 2024</p>
-          <div class="card" style="padding: .5rem;">
-            <img src="image/image-placeholder.png" class="img-fluid rounded mx-auto d-block" style="width: 70rem;">
-            <p>message short story...</p>
-          </div>
-        </div>
-        <div class="mb-3">
-          <div class="row">
-            <div class="col-1">
-              <figure class="figure">
-                <img src="image/image-placeholder.png" class="figure-img img-fluid rounded">
-                <figcaption class="figure-caption text-center">Don McLin</figcaption>
-              </figure>
-            </div>
-            <div class="col-11">
-              <div class="card" style="padding: .5rem;">
-                <p>dsadsaadsa</p>
-              </div>
-              <p class="text-end ptag">Replay Date: 2024</p>
-            </div>
-          </div>
-          <div class="mb-3">
-            <form action="" class="row g-2">
-              <div class="col-11">
-                <textarea class="form-control" rows="3"></textarea>
-              </div>
-              <div class="col-sm">
-                <a class="replay btn text-muted" role="button" href=""><i class="fa fa-reply"></i>Replay</a>
-              </div>
-            </form>
-          </div>
-        </div>
+      <div id="post">
+        
       </div>
       <script src="js/forumFunction.js"></script>
     </div>

@@ -8,13 +8,18 @@ $events = array();
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $date = new DateTime($row['schedule']);
+        if($row["imgType"]!==null&&$row["imgData"]!==null){
+            $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+        }else{
+            $photo = null;
+        }
         $events[] = array( 
             'date' => $date->format('Y-m-d'),
             'title' => $row['title'],
             'time' => $row['time'],
             'location' => $row['location'],
             'description' => $row['description'],
-            'image' => $row['image'],
+            'image' => $photo,
             'url' => $row['link']
         );
     }

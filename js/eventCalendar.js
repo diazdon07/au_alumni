@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(event.image === null){
           eventImage.src = 'image/image-placeholder.png';
         }else{
-          eventImage.src = `/upload/${event.image}`;
+          eventImage.src = event.image;
         }
         const eventDesc = document.createElement('p');
         eventDesc.classList.add('lh-sm');

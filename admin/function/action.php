@@ -1,7 +1,7 @@
 <?php
 include '../../db/dbcon.php';
 header('Content-Type: application/json');
-if(isset($_GET['action']) || isset($_FILES['file1']) || isset($_FILES['file2'])){
+if(isset($_GET['action'])){
     $action = $_GET['action'];
     $dataArray = array();
     extract($_POST);
@@ -77,19 +77,90 @@ if(isset($_GET['action']) || isset($_FILES['file1']) || isset($_FILES['file2']))
     
     // add gallery
     if($action === 'AddGallery'){
-        $fileData1 = fileUpload($_FILES['file1'],'upload');
-        if($fileData1 === 0){
-            echo json_encode(array('error'=>'error image'));
-        }else{
-            $stmt = $conn->prepare('INSERT INTO `gallery` (title, image, description) VALUES (?,?,?)');
-            $stmt->bind_param('sss', $title, $fileData1, $description);
+        if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
+            $imgData = file_get_contents($_FILES['image']['tmp_name']);
+            $imgType = $_FILES['image']['type'];
 
-            if($stmt->execute()){
-                echo json_encode('Gallery successfully save.');
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($imgType, $allowedTypes)) {
+                echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            }
+
+            $stmt = $conn->prepare('INSERT INTO `gallery` (title, imgData, imgType, description) VALUES (?,?,?,?)');
+            $stmt->bind_param('ssss', $title, $imgData, $imgType, $description);
+
+            if($stmt){
+                if($stmt->execute()){
+                    echo json_encode('Gallery successfully save.');
+                }else{
+                    echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
+                }
+                mysqli_stmt_close($stmt);
             }else{
-                echo json_encode(array('error' => 'Gallery failed to save.'));
+                echo json_encode(array('error' => 'Database error: ' . $conn->error));
+            }
+        }
+    }
+
+    // edit gallery
+    if($action === 'EditGallery'){
+        if($_FILES['image'] !== null){
+
+            $stmt = $conn->prepare('UPDATE `gallery` SET title = ?, description = ? WHERE id = ?');
+            $stmt->bind_param('ssi', $title, $description, $id);
+
+            if($stmt){
+                if($stmt->execute()){
+                    echo json_encode('Gallery successfully save.');
+                }else{
+                    echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
+                }
+                mysqli_stmt_close($stmt);
+            }else{
+                echo json_encode(array('error' => 'Database error: ' . $conn->error));
+            }
+        }else{
+            if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
+                $imgData = file_get_contents($_FILES['image']['tmp_name']);
+                $imgType = $_FILES['image']['type'];
+
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!in_array($imgType, $allowedTypes)) {
+                    echo json_encode(array('error' => 'Invalid file type.'));
+                    exit;
+                }
+
+                $stmt = $conn->prepare('UPDATE `gallery` SET title = ?, imgData = ?, imgType = ?, description = ? WHERE id = ?');
+                $stmt->bind_param('ssssi', $title, $imgData, $imgType, $description, $id);
+
+                if($stmt){
+                    if($stmt->execute()){
+                        echo json_encode('Gallery successfully save.');
+                    }else{
+                        echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
+                    }
+                    mysqli_stmt_close($stmt);
+                }else{
+                    echo json_encode(array('error' => 'Database error: ' . $conn->error));
+                }
+            }
+        }
+    }
+
+    // delete gallery
+    if($action === 'DeleteGallery'){
+        $stmt = $conn->prepare('DELETE FROM `gallery` WHERE id = ?');
+        $stmt->bind_param('i', $id);
+        if($stmt){
+            if($stmt->execute()){
+                echo json_encode('Gallery successfully deleted.');
+            }else{
+                echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
             }
             mysqli_stmt_close($stmt);
+        }else{
+            echo json_encode(array('error' => 'Database error: ' . $conn->error));
         }
     }
 
@@ -119,50 +190,7 @@ if(isset($_GET['action']) || isset($_FILES['file1']) || isset($_FILES['file2']))
         mysqli_stmt_close($stmt);
     }
 
-    // add alumni
-    if($action === 'AddAlumni'){
-
-        $result = mysqli_query($conn,'SELECT * FROM `students` WHERE student_number = '.$stdNo);
-        if(mysqli_num_rows($result) > 0){
-            echo json_encode(array('error','Student Number: '.$stdNo.' already save.'));
-        }else{
-            $stmt = $conn->prepare('INSERT INTO `students` (student_number) VALUES (?)');
-            $stmt->bind_param('s', $stdNo);
-
-            if($stmt->execute()){
-                echo json_encode('Student Number successfully save.');
-            }else{
-                echo json_encode(array('error' => 'Student Number failed to save.'));
-            }
-            mysqli_stmt_close($stmt);
-        }
-
-        
-    }
+   
 }
 mysqli_close($conn);
-
-function fileUpload($file,$path){
-
-    $uploadDir = $path.'/';
-    $allowTypes = array('jpg','png','jpeg');
-    $uploadedFile = '';
-
-    if(!empty($file)){
-        $fileName = basename($file['name']);
-        $targetPath = $uploadDir . $fileName;
-        $fileType = pathinfo($targetPath, PATHINFO_EXTENSION);
-
-        if(in_array($fileType, $allowTypes)){
-            if(move_uploaded_file($file["tmp_name"], '../../'.$path.'/'.$fileName)){
-                $uploadedFile = $fileName;
-                return $uploadedFile;
-            }else{
-                return 0;
-            }
-        }
-    }else{
-        return null;
-    }
-}
 ?>

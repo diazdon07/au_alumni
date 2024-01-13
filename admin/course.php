@@ -107,7 +107,7 @@ $('#btn-course').click(function(){
               console.log('Error: ', err)
             },
             success: function(data) {
-              console.log(data)
+              console.log(data.error)
               location.reload()
             }
       })

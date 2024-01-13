@@ -10,12 +10,16 @@ include '../db/dbcon.php';
   <!-- Bootstrap@5.3.2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  <!-- Local css/style.css -->
-  <link rel="stylesheet" href="../css/style.css">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="../js/datatables.min.js"></script>
+  <!-- Local css/style.css -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Data Tables & jquery 3.6.0 -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
   <!-- modal alert -->
@@ -101,24 +105,38 @@ messagePlaceholder.addEventListener('click', (event) => {
 
 window.onload = () => {
   let user = JSON.parse(sessionStorage.user || null);
-  // if(user != null){
-  //   if(user.userType != 'admin'){
-  //     location.replace('../index.php');
-  //   }else{
-  //     profileForm.classList.add("d-block");
-  //     profileForm.classList.remove("d-none");
-  //     profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
-  //     if(user.photo !== ''){
-  //       profileImage.src = `../upload/${user.photo}`
-  //     }
-  //     logout.addEventListener('click', () => {
-  //         sessionStorage.clear();
-  //         location.reload();
-  //     })
-  //   }
-  // }else{
-  //   location.replace('../login_admin.html')
-  // }
+  if(user != null){
+    if(user.userType === 0){
+      profileForm.classList.add("d-block");
+      profileForm.classList.remove("d-none");
+      profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
+      if(user.photo !== null){
+        profileImage.src = user.photo
+      }
+      logout.addEventListener('click', () => {
+          sessionStorage.clear();
+          location.reload();
+      })
+      
+    }else if(user.userType === 2){
+      profileForm.classList.add("d-block");
+      profileForm.classList.remove("d-none");
+      profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
+      if(user.photo !== null){
+        profileImage.src = user.photo
+      }
+      logout.addEventListener('click', () => {
+          sessionStorage.clear();
+          location.reload();
+      })
+    }else{
+      sessionStorage.clear();
+      location.replace('../index.php');
+    }
+  }else{
+    sessionStorage.clear();
+    location.replace('../login_admin.html');
+  }
 }
 </script>
 </body>
