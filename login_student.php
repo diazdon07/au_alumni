@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Au Cite Alumni Login</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Local css/style.css -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calendarDisplay.css">
+    
+    <script src="css/bootstrap-5.0.2/js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.7.1.js"></script>
 </head>
 <?php
 include 'db/dbcon.php';
 ?>
-<body>
+<body style="background: white;">
     <!-- modal alert -->
     <div class="message-box" id="messageBox">
         <span class="close-button btn-close " role="button"></span>
@@ -24,7 +24,7 @@ include 'db/dbcon.php';
     <!-- Login Form -->
     <div class="card box-form" id="login-form">
         <div class="logo">
-            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" />
+            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" class="imgLogo"/>
         </div>
         <h5 class="text-center mt-4">
             Login
@@ -39,7 +39,7 @@ include 'db/dbcon.php';
             <div class="d-grid gap-2 col-6 mx-auto">
                 <button type="button" class="btn btn-primary" id="submit-login">Login</button>
                 <button type="button" class="btn btn-danger" id="back">Back</button>
-                <a href="#" id="forgetPassword">Forget password</a>
+                <!-- <a href="#" id="forgetPassword">Forget password</a> -->
                 <a href="#" id="sign-up">Register</a>
             </div>
         </form>
@@ -47,7 +47,7 @@ include 'db/dbcon.php';
     <!-- Forget Password -->
     <div class="card box-form" id="forget-form" style="display: none;">
         <div class="logo">
-            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" />
+            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" class="imgLogo"/>
         </div>
         <h5 class="text-center mt-4">
             Forget Password
@@ -65,7 +65,7 @@ include 'db/dbcon.php';
     <!-- Registration Form -->
     <div class="card box-form" id="register-form" style="display: none;">
         <div class="logo">
-            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" />
+            <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="Simple No Png" class="imgLogo"/>
         </div>
         <h5 class="text-center mt-4">
             Register
@@ -73,19 +73,7 @@ include 'db/dbcon.php';
         <form>
             <div class="mb-3 input-group">
                 <span class="input-group-text" id="addon-number">Student No.</span>
-                <select id="student_number" class="form-control" aria-describedby="addon-number">
-                    <option hidden>-Select Student No.-</option>
-                    <?php
-                    $result = mysqli_query($conn,'SELECT * FROM `students` WHERE uid = ""');
-                    if(mysqli_num_rows($result) > 0){
-                      while($row = mysqli_fetch_assoc($result)):
-                    ?>
-                    <option value="<?= $row['id'] ?>"><?= $row['student_number'] ?></option>
-                    <?php
-                      endwhile;
-                    }
-                    ?>
-                </select>
+                <input type="text" class="form-control" id="student_number" aria-describedby="addon-number">
             </div>
             <div class="mb-3">
                 <input type="text" class="form-control" id="firstname" placeholder="Firstname">
@@ -139,6 +127,7 @@ include 'db/dbcon.php';
         </form>
     </div>
 <script src="js/token.js"></script>
+<script src="js/systemSetting.js"></script>
 <script>    
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
@@ -180,6 +169,7 @@ window.onload = () => {
   }
 }
 
+
 $('#mobile').keydown(function(event) {
     if(!isNaN(event.key) || event.key === 'Backspace') {
         if($(this).val().length >= 10 && event.key !== 'Backspace'){
@@ -188,6 +178,11 @@ $('#mobile').keydown(function(event) {
     }else{
         event.preventDefault();       
     }
+})
+$('#student_number').keydown(function(event) {
+    if(isNaN(event.key) && event.key !== 'Backspace') {
+    event.preventDefault();
+  }
 })
 
 $('#sign-up').click(function() {
@@ -302,7 +297,7 @@ $(document).ready(function() {
             type: 'POST',
             url: 'php/action.php?action=register',
             data: {
-                id: student_number.value,
+                stdno: student_number.value,
                 firstname: firstname.value,
                 middlename: middlename.value,
                 lastname: lastname.value,
@@ -319,11 +314,12 @@ $(document).ready(function() {
             success: function(data) {
                 console.log('Success data Recieve');
                 if(data.error){  
+                    console.log(data.error);
                     showAlert(data.error);
                 }else{
                     setTimeout(function(){
                         showAlert('success','Account successfully created.');
-                        location.replace('index.html')
+                        location.reload();
                     },500)
                 }
             }

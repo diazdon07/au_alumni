@@ -153,7 +153,7 @@
           </div>
         </div>
         <div class="col-sm-9">
-          <div class="alumnicontent"></div>
+            <div class="alumnicontent row"></div>
           <div class="pagination-container text-center my-4"></div>
         </div>
       </div>
@@ -165,7 +165,98 @@
     </div>
     <!-- Forum Tabs  -->
     <div class="tab-pane fade" id="forum" role="tabpanel" aria-labelledby="forum-tab">
-      Forum Content.
+      <!-- forum table -->
+      <div class="main">
+        <div class="row">
+          <div class="col-3">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="addonSearch"><i class="fa fa-search"></i></span>
+              <input type="text" name="search" class="form-control" id="search" aria-describedby="addonSearch" placeholder="Search...">
+            </div>
+          </div>
+          <div class="col-2">
+            <select name="" class="form-control" id="filter">
+              <option hidden>Filter By:</option>
+              <option value="">Popular</option>
+              <option value="">Latest</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+        <table class="table table-hover">
+          <thead>
+            <th scope="col" class="text-center">Topics</th>
+            <th scope="col" class="text-center" style="width: 10rem;">Replies</th>
+          </thead>
+          <tbody class="forumData">
+             
+          </tbody>
+        </table>
+        <!-- create topic -->
+        <form id="createPost" class="card" enctype="multipart/form-data" style="padding: 1rem;">
+          <div class="row g-3">
+            <div class="col-8">
+              <div class="mb-3">
+                <input type="hidden" name="create" id="userS">
+                <input type="text" name="topic" id="topicId" class="form-control" placeholder="Topic Title">
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control" rows="5" name="content" id="contentId" placeholder="Topic Content"></textarea>
+              </div>
+            </div>
+            <div class="col-3">
+              <img src="image/image-placeholder.png" class="rounded mx-auto d-block" style="width: 10rem;" id="dpl">
+              <input type="file" class="form-control" name="file1" accept="image/*" id="postImg">
+            </div>
+            <div class="col-sm">
+              <input type="submit" class="btn btn-primary" value="Create">
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- post view -->
+      <div class="post">
+        <div class="mb-3">
+          <a href="#" class="ptag text-muted"><i class="fa fa-chevron-left"></i> Back</a>
+        </div>
+        <div class="mb-3">
+          <h2><i class="fa fa-book"></i>Treanding issue</h2>
+          <p>By Admin | Posted Date 2024</p>
+          <div class="card" style="padding: .5rem;">
+            <img src="image/image-placeholder.png" class="img-fluid rounded mx-auto d-block" style="width: 70rem;">
+            <p>message short story...</p>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="row">
+            <div class="col-1">
+              <figure class="figure">
+                <img src="image/image-placeholder.png" class="figure-img img-fluid rounded">
+                <figcaption class="figure-caption text-center">Don McLin</figcaption>
+              </figure>
+            </div>
+            <div class="col-11">
+              <div class="card" style="padding: .5rem;">
+                <p>dsadsaadsa</p>
+              </div>
+              <p class="text-end ptag">Replay Date: 2024</p>
+            </div>
+          </div>
+          <div class="mb-3">
+            <form action="" class="row g-2">
+              <div class="col-11">
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+              <div class="col-sm">
+                <a class="replay btn text-muted" role="button" href=""><i class="fa fa-reply"></i>Replay</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <script src="js/forumFunction.js"></script>
     </div>
   </section>
 </div>

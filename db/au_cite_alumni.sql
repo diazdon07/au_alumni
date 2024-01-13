@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 04, 2024 at 09:53 AM
+-- Generation Time: Jan 09, 2024 at 11:58 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -88,11 +88,18 @@ INSERT INTO `events` (`id`, `title`, `image`, `schedule`, `time`, `location`, `d
 CREATE TABLE `forums` (
   `id` int(11) NOT NULL,
   `topic` text NOT NULL,
-  `description` text NOT NULL,
+  `img` varchar(255) DEFAULT NULL,
+  `content` text NOT NULL,
   `created` varchar(255) NOT NULL,
-  `comments` int(255) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `forums`
+--
+
+INSERT INTO `forums` (`id`, `topic`, `img`, `content`, `created`, `timestamp`) VALUES
+(2, 'First Topic', 'au-news-38-10.jpeg', 'Message Content...', 'Don McLin', '2024-01-08 11:34:53');
 
 -- --------------------------------------------------------
 
@@ -161,7 +168,8 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `student_number`, `uid`, `firstname`, `middlename`, `lastname`, `gender`, `address`, `city`, `course`, `batch`, `photo`) VALUES
-(1, '20-00387', 'tj9ZYGgfqHb14MFQ4AfTLzMYBBZ2', 'Don McLin', 'Dela Cruz', 'Diaz', 0, '', '', '1', '2024', '');
+(2, '19-00206', 'F26ilvHVKqe9W6xjyhColcTNJkG3', 'Eriko', 'Morales', 'Bato', 0, '', '', '1', '2024', ''),
+(3, '20-00387', 'gbVedvlldwZa9evjqZSzfmY6aGe2', 'Don McLin', 'Dela Cruz', 'Diaz', 0, '', '', '1', '2024', '');
 
 -- --------------------------------------------------------
 
@@ -264,7 +272,7 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT for table `forums`
 --
 ALTER TABLE `forums`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `gallery`
@@ -282,7 +290,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `system`

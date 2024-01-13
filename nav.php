@@ -2,8 +2,8 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
       <h2 class="text-warning">
-        <img src="image/logo.png" alt="logo" width="40rem">
-        AU JAS Cite
+        <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" class="imgLogo" alt="logo" width="40rem">
+        <span class="systemName"></span>
       </h2>
       <h6 class="text-white">Alumni Management System</h6>
     </a>
@@ -41,6 +41,39 @@
   </div>
 </nav>
 <script>
+var profileForm = document.getElementById('profile');
+var loginForm = document.getElementById('formlogin');
+const profileImage = document.querySelector('#profileImage');
+const profilename = document.querySelector('#profileMenu');
+const logout = document.querySelector('#logout');
+
+window.onload = () => {
+  let user = JSON.parse(sessionStorage.user || null);
+  if(user != null){
+      if(user.userType == 'admin'){
+          location.replace('admin/index.php');
+      }else{
+        loginForm.classList.add("d-none");
+        loginForm.classList.remove("d-flex");
+        profileForm.classList.add("d-block");
+        profileForm.classList.remove("d-none");
+        profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
+        if(user.photo !== ''){
+        profileImage.src = `upload/${user.photo}`
+        }
+        logout.addEventListener('click', () => {
+            sessionStorage.clear();
+            location.reload();
+        })
+      }
+    }else{
+      loginForm.classList.add("d-flex");
+      loginForm.classList.remove("d-none");
+      profileForm.classList.add("d-none");
+      profileForm.classList.remove("d-block");
+    }
+}
+
 $('#login').click(function(){
   location.replace('login_student.php');
 })

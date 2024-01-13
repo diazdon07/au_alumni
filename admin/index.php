@@ -15,6 +15,7 @@ include '../db/dbcon.php';
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="../js/datatables.min.js"></script>
 </head>
 <body>
   <!-- modal alert -->
@@ -100,24 +101,24 @@ messagePlaceholder.addEventListener('click', (event) => {
 
 window.onload = () => {
   let user = JSON.parse(sessionStorage.user || null);
-  if(user != null){
-    if(user.userType != 'admin'){
-      location.replace('../index.php');
-    }else{
-      profileForm.classList.add("d-block");
-      profileForm.classList.remove("d-none");
-      profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
-      if(user.photo !== ''){
-        profileImage.src = `../upload/${user.photo}`
-      }
-      logout.addEventListener('click', () => {
-          sessionStorage.clear();
-          location.reload();
-      })
-    }
-  }else{
-    location.replace('../login_admin.html')
-  }
+  // if(user != null){
+  //   if(user.userType != 'admin'){
+  //     location.replace('../index.php');
+  //   }else{
+  //     profileForm.classList.add("d-block");
+  //     profileForm.classList.remove("d-none");
+  //     profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
+  //     if(user.photo !== ''){
+  //       profileImage.src = `../upload/${user.photo}`
+  //     }
+  //     logout.addEventListener('click', () => {
+  //         sessionStorage.clear();
+  //         location.reload();
+  //     })
+  //   }
+  // }else{
+  //   location.replace('../login_admin.html')
+  // }
 }
 </script>
 </body>
