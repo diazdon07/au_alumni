@@ -6,16 +6,18 @@
     <title>Au Cite Alumni Login</title>
 
     <!-- Bootstrap@5.3.2 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <!-- Local css/style.css -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Local css/style.css -->
     <link rel="stylesheet" href="css/style.css">
 
-    <script src="js/jquery-3.7.1.js"></script>
+    <!-- Data Tables & jquery 3.6.0 -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
 <?php
 include 'db/dbcon.php';
@@ -81,6 +83,13 @@ include 'db/dbcon.php';
                 <input type="text" class="form-control" id="student_number" aria-describedby="addon-number">
             </div>
             <div class="mb-3">
+                <select id="gender" class="form-control">
+                    <option hidden>-Select Gender-</option>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <input type="text" class="form-control" id="firstname" placeholder="Firstname">
             </div>
             <div class="mb-3">
@@ -140,6 +149,7 @@ const forgetPassword = document.getElementById('forget-form');
 const firstname = document.getElementById('firstname');
 const middlename= document.getElementById('middlename');
 const lastname = document.getElementById('lastname');
+const gender = document.getElementById('gender');
 const mobile = document.getElementById('mobile');
 const emailReg = document.getElementById('emailReg');
 const pwdReg = document.getElementById('pwdReg');
@@ -184,6 +194,7 @@ $('#mobile').keydown(function(event) {
         event.preventDefault();       
     }
 })
+
 $('#student_number').keydown(function(event) {
     if(isNaN(event.key) && event.key !== 'Backspace') {
     event.preventDefault();
@@ -236,13 +247,17 @@ $(document).ready(function() {
                 console.log('Error: ', err);
             },
             success: function(data) {
-                console.log('Success data Recieve');
-                setTimeout(function(){
-                    data.authToken = generateToken(data.email);
-                    sessionStorage.user = JSON.stringify(data);
-                    showAlert('success','Account successfully login.');
-                    location.reload()
-                },500)
+                if(data.error){
+                    showAlert('error',data.error);
+                }else{
+                    console.log('Success data Recieve');
+                    setTimeout(function(){
+                        data.authToken = generateToken(data.email);
+                        sessionStorage.user = JSON.stringify(data);
+                        showAlert('success','Account successfully login.');
+                        location.reload()
+                    },500)
+                }
             }
         })
     }
@@ -275,9 +290,13 @@ $(document).ready(function() {
     console.log('Click Registration.');
     if(!batch.value.length || !course.value.length || !student_number.value.length || 
     !emailReg.value.length || !pwdReg.value.length || !firstname.value.length || 
-    !lastname.value.length || !mobile.value.length || !conPwd.value.length){
+    !lastname.value.length || !mobile.value.length || !conPwd.value.length ||
+    !gender.value.length ){
         showAlert('error','Incomplete details.')
         console.log('Incomplete details.');
+    }else if(gender.value.length === ''){
+        showAlert('error','Please select gender.')
+        console.log('Please select gender.');
     }else if(firstname.value.length < 3){
         showAlert('error','Invalid firstname must contain at least 3 letter.')
         console.log('Invalid firstname must contain at least 3 letter.');
@@ -303,6 +322,7 @@ $(document).ready(function() {
             url: 'php/action.php?action=register',
             data: {
                 stdno: student_number.value,
+                gender: gender.value,
                 firstname: firstname.value,
                 middlename: middlename.value,
                 lastname: lastname.value,

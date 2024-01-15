@@ -15,19 +15,7 @@
                           </div>
                           <form id="modalform" enctype="multipart/form-data">
                             <div class="modal-body">
-                                <div class="mb-3">
-                                  <input type="hidden" id="fId">
-                                  <input type="text" class="form-control" name="job" placeholder="Job Title">
-                                </div>
-                                <div class="mb-3">
-                                  <input type="text" class="form-control" name="company" placeholder="Company">
-                                </div>
-                                <div class="mb-3">
-                                  <input type="text" class="form-control" name="link" placeholder="Link">
-                                </div>
-                                <div class="mb-3">
-                                  <textarea class="form-control" name="description" placeholder="Description" rows="3"></textarea>
-                                </div>
+                                
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -39,48 +27,24 @@
                     </div>
 
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="Table">
                             <thead>
                                 <tr>
                                   <th scope="col">#</th>
                                   <th scope="col">Job Title</th>
                                   <th scope="col">Company</th>
                                   <th scope="col">Link</th>
-                                  <th scope="col">Description</th>
                                   <th scope="col">Activity</th>
                                 </tr>
                               </thead>
-                              <tbody>
-                                <?php
-                                $result = mysqli_query($conn,'SELECT * FROM `jobs`');
-                                $i = 1;
-                                if(mysqli_num_rows($result) > 0){
-                                  while($row = mysqli_fetch_assoc($result)):
-                                ?>
-                                <tr>
-                                  <th scope="row"><?= $i++ ?></th>
-                                  <td><?= $row['job_title'] ?></td>
-                                  <td><?= $row['company'] ?></td>
-                                  <td><?= $row['link'] ?></td>
-                                  <td><?= $row['description'] ?></td>
-                                  <td>
-                                    <button class="btn btn-primary" type="button" id="view">View</button>
-                                    <button class="btn btn-danger" type="button" id="delete">Delete</button>
-                                    <button class="btn btn-warning" data-bs-target="#jobeModal" data-bs-toggle="modal" 
-                                    data-bs-whatever="Edit" type="button">Edit</button>
-                                  </td>
-                                </tr>
-                                <?php
-                                 endwhile;
-                                }else{
-                                  echo 'No Data Found.';
-                                }
-                                ?>
+                              <tbody class="Tbody">
+                                
                               </tbody>
                         </table>
                     </div>
                 </div>
                 <script>
+document.addEventListener('DOMContentLoaded', function () {
 const exampleModal = document.getElementById('modalt')
 
 exampleModal.addEventListener('show.bs.modal', function (event) {
@@ -91,12 +55,50 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
   var modalTitle = exampleModal.querySelector('.modal-title')
   var btn = exampleModal.querySelector('#fbtn')
 
-  modalTitle.textContent = recipient + ' Event'
+  modalTitle.textContent = recipient + ' Job'
   btn.textContent = recipient
   btn.value = recipient
+
+  const modalBody = document.querySelector('.modal-body');
+  modalBody.innerHTML = '';
+
   if(recipient === 'Edit'){
-    
+
+    const bodyHTMLData = `
+    <div class="mb-3">
+      <input type="hidden" name="id" value="${button.getAttribute('data-id')}">
+      <input type="text" class="form-control" name="job" placeholder="Job Title" value="${button.getAttribute('data-title')}">
+    </div>
+    <div class="mb-3">
+      <input type="text" class="form-control" name="company" placeholder="Company" value="${button.getAttribute('data-company')}">
+    </div>
+    <div class="mb-3">
+      <input type="text" class="form-control" name="link" placeholder="Link" value="${button.getAttribute('data-link')}">
+    </div>
+    <div class="mb-3">
+      <textarea class="form-control" name="description" placeholder="Description" rows="3">${button.getAttribute('data-desc')}</textarea>
+    </div>
+    `;
+    modalBody.insertAdjacentHTML('beforeend', bodyHTMLData);
+  }else{
+    const bodyHTMLData = `
+    <div class="mb-3">
+      <input type="hidden" name="id">
+      <input type="text" class="form-control" name="job" placeholder="Job Title">
+    </div>
+    <div class="mb-3">
+      <input type="text" class="form-control" name="company" placeholder="Company">
+    </div>
+    <div class="mb-3">
+      <input type="text" class="form-control" name="link" placeholder="Link">
+    </div>
+    <div class="mb-3">
+      <textarea class="form-control" name="description" placeholder="Description" rows="3"></textarea>
+    </div>
+    `;
+    modalBody.insertAdjacentHTML('beforeend', bodyHTMLData);
   }
+  
 })
 $(document).ready(function(e) {
   $('#modalform').on('submit',function(e){
@@ -122,5 +124,87 @@ $(document).ready(function(e) {
       }
     })
   })
+})
+
+const jobData = [];
+
+function updateData(data) {
+      
+  jobData.length = 0;
+
+  data.forEach(job => {
+    jobData.push({
+      id: job.id,
+      job_title: job.job_title,
+      company: job.company,
+      link: job.link,
+      description: job.description
+    });    
+  });
+  updateSource();
+}
+  
+function fetchData() {
+  fetch('../php/jobs.php')
+  .then(response => response.json()) // Assuming the PHP returns JSON data
+  .then(data => {
+  
+    updateData(data);
+  })
+  .catch(error => console.error('Error fetching job data:', error));
+}
+
+function updateSource(){
+  const tableData = document.querySelector('.Tbody');
+    tableData.innerHTML = '';
+    let i = 1;
+
+    jobData.forEach( data => {
+      const tableHTMLData = `
+      <tr>
+       <th scope="row">${i++}</th>
+        <td>${data.job_title}</td>
+        <td>${data.company}</td>
+        <td>${data.link}</td>
+        <td>
+          <button class="btn delete btn-danger" data-id="${data.id}" type="button">Delete</button>
+          <button class="btn btn-warning" data-bs-target="#modalt" data-bs-toggle="modal" data-id="${data.id}" data-title="${data.job_title}"
+          data-company="${data.company}" data-link="${data.link}" data-desc="${data.description}" data-bs-whatever="Edit" type="button">Edit</button>
+        </td>
+      </tr>
+      `;
+      tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+    });
+    $(document).ready( function() {
+      $('#Table').DataTable();
+    });
+    document.querySelectorAll('.delete').forEach(element => {
+      element.addEventListener('click', function () {
+        const topicId = this.getAttribute('data-id');
+
+        $.ajax({
+        type: 'POST',
+        url: 'function/action.php?action=DeleteJob',
+        data: {
+          id: topicId
+        },
+        error: function(err) {
+          console.log('error: ', err)
+        },
+        success: function(data) {
+          if(data.error){
+            console.log(data.error);
+          }else{
+            console.log(data);
+            location.reload();
+          }
+        }
+        })
+      });
+    });
+
+}
+
+fetchData()
 })
                 </script>

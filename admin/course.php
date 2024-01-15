@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="Table">
                             <thead>
                               
                                 <tr>
@@ -40,38 +40,16 @@
                                 </tr>
                               
                               </thead>
-                              <tbody>
-                              <?php
-                              $result = mysqli_query($conn,'SELECT * FROM `courses`');
-                              $i = 1;
-                              if(mysqli_num_rows($result) > 0){
-                                while($row = mysqli_fetch_assoc($result)):
-                              ?>
-                                <tr>
-                                  <input type="hidden" id="Id" value="<?= $row['id']?>">
-                                  <input type="hidden" id="Course" value="<?= $row['course']?>">
-                                  <th scope="row"><?= $i++ ?></th>
-                                  <td><?= $row['course']?></td>
-                                  <td>
-                                    <button class="btn btn-danger" type="button" id="delete">Delete</button>
-                                    <button class="btn btn-warning" data-bs-target="#courseModal" data-bs-toggle="modal" 
-                                    data-bs-whatever="Edit" type="button">Edit</button>
-                                  </td>
-                                </tr>
-                              <?php
-                                endwhile;
-                              }else{
-                                echo 'No Data Found.';
-                              }
-                              ?>
+                              <tbody class="Tbody">
+                              
                               </tbody>
                         </table>
                     </div>
                 </div>
                 <script>
+document.addEventListener('DOMContentLoaded', function() {
+
 const exampleModal = document.getElementById('courseModal')
-const id = document.querySelector('#Id')
-const course = document.querySelector('#Course')
 const coursename = document.querySelector('#courseName')
 const coursId = document.querySelector('#courseId')
 exampleModal.addEventListener('show.bs.modal', function (event) {
@@ -86,8 +64,8 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
   btn.textContent = recipient
   btn.value = recipient
   if(recipient === 'Edit'){
-    coursename.value = course.value
-    coursId.value = id.value
+    coursename.value = button.getAttribute('data-title');
+    coursId.value = button.getAttribute('data-id');
   }
 })
 $('#btn-course').click(function(){
@@ -116,4 +94,79 @@ $('#btn-course').click(function(){
 $('#delete').click(function(){
   console.log('Delete button click')
 })
+
+const courseData = [];
+
+function updateCoursesData(data){
+  
+  courseData.length = 0;
+
+    data.forEach(course => {
+      courseData.push({
+        id: course.id,
+        course: course.course
+      });
+    });
+    updateSource();
+}
+
+function fetchData(){
+  fetch('../php/courses.php')
+    .then(response => response.json())
+    .then(data => {
+      updateCoursesData(data);
+    })
+    .catch(error => console.error('Error fetching course data:', error));
+}
+
+function updateSource(){
+  const tableData = document.querySelector('.Tbody');
+  tableData.innerHTML = '';
+  let i = 1;
+
+  courseData.forEach( data => {
+    const tableHTMLData = `
+    <tr>
+      <th scope="row">${i++}</th>
+      <td>${data.course}</td>
+      <td>
+        <button class="btn btn-danger delete" type="button" data-id="${data.id}">Delete</button>
+        <button class="btn btn-warning" data-bs-target="#courseModal" data-id="${data.id}" data-title="${data.course}" data-bs-toggle="modal" 
+        data-bs-whatever="Edit" type="button">Edit</button>
+      </td>
+    </tr>
+    `;
+    tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+  })
+  $(document).ready( function() {
+    $('#Table').DataTable();
+  })
+  document.querySelectorAll('.delete').forEach(element => {
+    element.addEventListener('click', function() {
+      const dataId = this.getAttribute('data-id');
+
+      $.ajax({
+        type: 'POST',
+        url: 'function/action.php?action=DeleteCourse',
+        data: {
+          id: dataId
+        },
+        error: function(err){
+          console.log('error: ', err)
+        },
+        success: function(data) {
+          if(data.error){
+            console.log(data.error);
+          }else{
+            console.log(data);
+            location.reload();
+          }
+        }
+      })
+    })
+  })
+}
+
+fetchData();
+});
                 </script>

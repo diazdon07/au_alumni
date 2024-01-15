@@ -48,8 +48,67 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
+  <div class="row gx-2" style="margin-top: 1rem;">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          <span class="ms-1 d-sm-inline">Job Offers</span>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover" id="jobTable">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Job Position</th>
+                <th scope="col">Company</th>
+                <th scope="col">Created By</th>
+                <th scope="col">Date & Time Created</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card">
+        <div class="card-header">
+          <span class="ms-1 d-sm-inline">Notification</span>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover" id="notifTable">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Activity</th>
+                <th scope="col">Type</th>
+                <th scope="col">Time</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card" style="margin-top: 1rem;">
+      <div class="card-header">
+        <span class="ms-1 d-sm-inline">Upcoming Events</span>
+      </div>
+      <div class="card-body">
+        <table class="table table-hover" id="eventTable">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Event Title</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const userData = [];

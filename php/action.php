@@ -24,82 +24,91 @@ if(isset($_GET['action'])){
                     $mobile = $data['contact'];
                     $type = $data['type'];
 
-                    if($type === '0'){
-                        if($userType === 'student'){
+                    if($data['status']!==0){
+                        if($type === 1){
+                            if($userType === 'student'){
 
-                            $sql = "SELECT * FROM `students` WHERE uid = '$uuid'";
-                            $stmt = mysqli_query($conn, $sql);
-            
-                            if (mysqli_num_rows($stmt) > 0) {
-                                while($row = mysqli_fetch_assoc($stmt)) {   
-                                    if($row["gender"] === '0'){
-                                        $gender = 'Male';
-                                    }else{
-                                        $gender = 'Female';
+                                $sql = "SELECT * FROM `students` WHERE uid = '$uuid'";
+                                $stmt = mysqli_query($conn, $sql);
+                
+                                if (mysqli_num_rows($stmt) > 0) {
+                                    while($row = mysqli_fetch_assoc($stmt)) {   
+                                        if($row["gender"] === '0'){
+                                            $gender = 'Male';
+                                        }else{
+                                            $gender = 'Female';
+                                        }
+                                        if($row["imgType"]!==null&&$row["imgData"]!==null){
+                                            $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+                                        }else{
+                                            $photo = null;
+                                        }
+                                        $dataArray = array(
+                                            'id' => $row["id"],
+                                            'studentno' => $row["student_number"],
+                                            'firstname' => $row["firstname"],
+                                            'middlename' => $row["middlename"],
+                                            'lastname' => $row["lastname"],
+                                            'gender' => $gender,
+                                            'address' => $row["address"],
+                                            'city' => $row["city"],
+                                            'course' => $row["course"],
+                                            'batch' => $row["batch"],
+                                            'photo' => $photo,
+                                            'email' => $email,
+                                            'contact' => $mobile
+                                        );
+                                        echo json_encode($dataArray);
                                     }
-                                    $dataArray = array(
-                                        'id' => $row["id"],
-                                        'studentno' => $row["student_number"],
-                                        'firstname' => $row["firstname"],
-                                        'middlename' => $row["middlename"],
-                                        'lastname' => $row["lastname"],
-                                        'gender' => $gender,
-                                        'address' => $row["address"],
-                                        'city' => $row["city"],
-                                        'course' => $row["course"],
-                                        'batch' => $row["batch"],
-                                        'photo' => $row["photo"],
-                                        'email' => $email,
-                                        'contact' => $mobile
-                                    );
-                                    echo json_encode($dataArray);
+                                }else{
+                                    echo json_encode(array('error' => 'Invalid student profile data.'));
                                 }
                             }else{
-                                echo json_encode(array('error' => 'Invalid student profile data.'));
+                                echo json_encode(array('error' => 'Login Failed.'));
                             }
                         }else{
-                            echo json_encode(array('error' => 'Login Failed.'));
+                            if($userType === 'admin'){
+
+                                $sql = "SELECT * FROM `admins` WHERE uid = '$uuid'";
+                                $stmt = mysqli_query($conn, $sql);
+            
+                                if (mysqli_num_rows($stmt) > 0) {
+                                    while($row = mysqli_fetch_assoc($stmt)) {   
+
+                                        if($row["gender"] === '0'){
+                                            $gender = 'Male';
+                                        }else{
+                                            $gender = 'Female';
+                                        }
+
+                                        if($row["imgType"]!==null&&$row["imgData"]!==null){
+                                            $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
+                                        }else{
+                                            $photo = null;
+                                        }
+
+                                        $dataArray = array(
+                                            'id' => $row["id"],
+                                            'firstname' => $row["firstname"],
+                                            'middlename' => $row["middlename"],
+                                            'lastname' => $row["lastname"],
+                                            'gender' => $gender,
+                                            'photo'=> $photo,
+                                            'email' => $email,
+                                            'contact' => $mobile,
+                                            'userType' => $type
+                                        );
+                                    echo json_encode($dataArray);
+                                    }
+                                }else{
+                                    echo json_encode(array('error' => 'Invalid admin profile data.'));
+                                }
+                            }else{
+                                echo json_encode(array('error' => 'Invalid Login.'));
+                            }
                         }
                     }else{
-                        if($userType === 'admin'){
-
-                            $sql = "SELECT * FROM `admins` WHERE uid = '$uuid'";
-                            $stmt = mysqli_query($conn, $sql);
-        
-                            if (mysqli_num_rows($stmt) > 0) {
-                                while($row = mysqli_fetch_assoc($stmt)) {   
-
-                                    if($row["gender"] === '0'){
-                                        $gender = 'Male';
-                                    }else{
-                                        $gender = 'Female';
-                                    }
-
-                                    if($row["imgType"]!==null&&$row["imgData"]!==null){
-                                        $photo = 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
-                                    }else{
-                                        $photo = null;
-                                    }
-
-                                    $dataArray = array(
-                                        'id' => $row["id"],
-                                        'firstname' => $row["firstname"],
-                                        'middlename' => $row["middlename"],
-                                        'lastname' => $row["lastname"],
-                                        'gender' => $gender,
-                                        'photo'=> $photo,
-                                        'email' => $email,
-                                        'contact' => $mobile,
-                                        'userType' => $type
-                                    );
-                                echo json_encode($dataArray);
-                                }
-                            }else{
-                                echo json_encode(array('error' => 'Invalid admin profile data.'));
-                            }
-                        }else{
-                            echo json_encode(array('error' => 'Invalid Login.'));
-                        }
+                        echo json_encode(array('error' => 'Account Disable.'));
                     }
                 }else{
                     echo json_encode(array('error' => 'Invalid email or password'));
@@ -111,7 +120,7 @@ if(isset($_GET['action'])){
     }
     //Registration
     if($action === 'register'){
-        $sqlStudent = "INSERT INTO students (uid, student_number, firstname, middlename, lastname, course, batch) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sqlStudent = "INSERT INTO students (uid, student_number, firstname, middlename, lastname, course, batch, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $sqlAdmin = "INSERT INTO admins (uid, firstname, middlename, lastname) VALUES (?, ?, ?, ?)";
         $sqlUser = "INSERT INTO user (uid, displayName, email, password, contact, status) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -132,19 +141,10 @@ if(isset($_GET['action'])){
                 $stmt->bind_param("ssss", $uuid, $firstname, $middlename, $lastname);
             }else{
                 $stmt = $conn->prepare($sqlStudent);
-                $stmt->bind_param("ssssssi", $uuid, $stdno, $firstname, $middlename, $lastname, $course, $batch);
+                $stmt->bind_param("ssssssii", $uuid, $stdno, $firstname, $middlename, $lastname, $course, $batch, $gender);
             }
         
             if($stmt->execute()){
-                $dataArray = array(
-                'email' => $email,
-                'firstname' => $firstname,
-                'middlename' => $middlename,
-                'lastname' => $lastname,
-                'contact' => $phone,
-                'userType' => $userType
-                );
-                echo json_encode($dataArray);
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($stmt_users);
             }else{

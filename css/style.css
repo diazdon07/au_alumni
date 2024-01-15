@@ -111,6 +111,45 @@ footer{
     text-decoration: none;
     font-size: small;
 }
-/* #post{
-    display: none;
-} */
+
+.disable-btn {
+    /* Disable button styling */
+    padding: 0 0.5rem;
+    border: 2px solid #990000;
+    border-radius: 1rem;
+    font-size: smaller;
+    color: white;
+    background-color: #e60000; /* Initial background color for Disable button */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  }
+
+  .disable-btn:hover {
+    background-color: #ff3333; /* Change background color on hover for Disable button */
+  }
+
+  .disable-btn:active {
+    transform: translateY(2px); /* Push down by 2 pixels when the Disable button is pressed */
+  }
+
+  .active-btn {
+    /* Active button styling */
+    padding: 0 0.5rem;
+    border: 2px solid #024502;
+    border-radius: 1rem;
+    font-size: smaller;
+    color: white;
+    background-color: #007700; /* Initial background color for Active button */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  }
+
+  .active-btn:hover {
+    background-color: #00cc00; /* Change background color on hover for Active button */
+  }
+
+  .active-btn:active {
+    transform: translateY(2px); /* Push down by 2 pixels when the Active button is pressed */
+  }

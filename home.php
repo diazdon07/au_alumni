@@ -18,14 +18,14 @@
       ?>
     </div>
     
-    <div class="carousel-inner">
+    <div class="carousel-inner" style="height: 30rem;">
       <?php
         $item_counter = 0;
         $result->data_seek(0); // Reset result set pointer
         while ($row = $result->fetch_assoc()) {
             $active_class = ($item_counter == 0) ? 'active' : ''; // Add 'active' class to first item
       ?>
-        <div class="carousel-item <?= $active_class ?>" data-bs-interval="2000">
+        <div class="carousel-item <?= $active_class ?>" data-bs-interval="4000">
             <img class="img-fluid d-block w-30 mx-auto" src="<?php 
             if($row['imgData']!==null&&$row['imgType']!==null){
               echo 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);

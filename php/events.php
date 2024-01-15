@@ -14,9 +14,11 @@ if ($result->num_rows > 0) {
             $photo = null;
         }
         $events[] = array( 
+            'id' => $row['id'],
             'date' => $date->format('Y-m-d'),
             'title' => $row['title'],
-            'time' => $row['time'],
+            'timestart' => $row['timestart'],
+            'timeend' => $row['timeend'],
             'location' => $row['location'],
             'description' => $row['description'],
             'image' => $photo,
