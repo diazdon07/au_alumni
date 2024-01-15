@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var fdesc = exampleModal.querySelector('#fdesc')
     var image = exampleModal.querySelector('#image')
 
-    modalTitle.textContent = recipient + ' Event'
+    modalTitle.textContent = recipient + ' Gallery'
     btn.textContent = recipient
     btn.value = recipient
     if(recipient === 'Edit'){

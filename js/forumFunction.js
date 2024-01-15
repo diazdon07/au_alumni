@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <h2><i class="fa fa-book"></i>${fData.topic}</h2>
           <p>By ${fData.created} | Posted Date ${fData.timestamp}</p>
           <div class="card" style="padding: .5rem;">
-            <img src="image/${fData.img || 'image-placeholder.png'}" class="img-fluid rounded mx-auto d-block" style="width: 70rem;">
+            <img src="image/${fData.img || 'image-placeholder.png'}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">
             <p>${fData.content}</p>
           </div>
         </div>
