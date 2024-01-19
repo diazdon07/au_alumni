@@ -251,12 +251,10 @@ $(document).ready(function() {
                     showAlert('error',data.error);
                 }else{
                     console.log('Success data Recieve');
-                    setTimeout(function(){
-                        data.authToken = generateToken(data.email);
-                        sessionStorage.user = JSON.stringify(data);
-                        showAlert('success','Account successfully login.');
-                        location.reload()
-                    },500)
+                    data.authToken = generateToken(data.email);
+                    sessionStorage.user = JSON.stringify(data);
+                    showAlert('success','Account successfully login.');
+                    location.reload()
                 }
             }
         })

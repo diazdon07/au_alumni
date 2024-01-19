@@ -86,7 +86,7 @@ $('#btn-course').click(function(){
             },
             success: function(data) {
               console.log(data.error)
-              location.reload()
+              
             }
       })
   }
@@ -159,14 +159,16 @@ function updateSource(){
             console.log(data.error);
           }else{
             console.log(data);
-            location.reload();
+            
           }
         }
       })
     })
   })
 }
+setInterval(() => {
+  fetchData();
+}, 500);
 
-fetchData();
 });
                 </script>

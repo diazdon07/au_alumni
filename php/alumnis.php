@@ -23,7 +23,10 @@ if ($result->num_rows > 0) {
             'city' => $row['city'],
             'course' => $row['course'],
             'batch' => $row['batch'],
-            'photo' => $photo
+            'photo' => $photo,
+            'jobC' => $row['job_create'],
+            'forumC' => $row['forum_create'],
+            'commentC' => $row['comment_create']
         );
     }
 }

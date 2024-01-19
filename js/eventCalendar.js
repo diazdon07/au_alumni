@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
         eventRow.classList.add('event-row');
         const eventTitle = document.createElement('span');
         eventTitle.textContent = event.title;
-        const eventTime = document.createElement('span');
-        eventTime.textContent = ` -> ${event.time}`;
+        const eventTime = document.createElement('p');
+        eventTime.textContent = `(${event.timestart} - ${event.timeend})`;
         eventRow.appendChild(eventTitle);
         eventRow.appendChild(eventTime);
         eventDetailsContainer.appendChild(eventRow);
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const eventTitle = document.createElement('h3');
         eventTitle.textContent = event.title;
         const eventTime = document.createElement('p');
-        eventTime.textContent = `(${event.time}) at ${event.location}`;
+        eventTime.textContent = `(${event.timestart} - ${event.timeend}) at ${event.location}`;
         const eventImage = document.createElement('img');
         eventImage.classList.add('img-fluid');
         if(event.image === null){
@@ -205,7 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
         eventData.push({
           title: event.title,
           date: event.date,
-          time: event.time,
+          timestart: event.timestart,
+          timeend: event.timeend,
           image: event.image,
           location: event.location,
           description: event.description,
@@ -225,7 +226,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => console.error('Error fetching event data:', error));
     }
 
-    fetchEventData();
-    updateCalendar();
-  
+    
+    setInterval(() => {
+      fetchEventData();
+      updateCalendar();
+    }, 500);
   });

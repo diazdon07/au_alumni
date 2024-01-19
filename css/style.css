@@ -79,6 +79,11 @@ footer{
     font-weight: bold;
 }
 
+.image-title{
+    text-shadow: 0 0 3px white, 0 0 5px whitesmoke;
+    font-weight: bolder;
+}
+
 .logo {
     width: 80px;
     margin: auto;
@@ -93,6 +98,16 @@ footer{
         0px 0px 0px 5px #ecf0f3,
         8px 8px 15px #a7aaa7,
         -8px -8px 15px #fff;
+}
+
+.profileImg{
+  width: 3.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0px 0px 3px #5f5f5f,
+      0px 0px 0px 4px gold,
+      3px 3px 15px grey,
+      -3px -3px 15px grey;
 }
 
 .box-form{
@@ -153,3 +168,84 @@ footer{
   .active-btn:active {
     transform: translateY(2px); /* Push down by 2 pixels when the Active button is pressed */
   }
+
+.card-list{
+  margin: 0.5rem 0rem;
+  cursor: pointer;
+}
+.text-note{
+  font-size: x-small;
+  border: 2px solid;
+  border-radius: 1rem;
+  padding: 0px 4px;
+}
+.partTime{
+  border-color: blue;
+  color: blue;
+  background-color: rgb(188, 221, 254);
+}
+.fullTime{
+  border-color: green;
+  color: green;
+  background-color: rgb(226, 255, 182);
+}
+.contractual{
+  border-color: gray;
+  color: gray;
+  background-color: rgb(223, 223, 223);
+}
+.All{
+  border-color: goldenrod;
+  color: goldenrod;
+  background-color: rgb(255, 244, 180);
+}
+
+.header-report{
+  background-color: #333;
+  color: #fff;
+  padding-top: 0.5rem;
+  text-align: center;
+}
+
+.pending-btn {
+  /* Disable button styling */
+  padding: 0 0.5rem;
+  border: 2px solid #616161;
+  border-radius: 1rem;
+  font-size: smaller;
+  color: white;
+  background-color: #7e7e7e; /* Initial background color for Disable button */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+.pending-btn:hover {
+  color:#000;
+  background-color: #b9b9b9; /* Change background color on hover for Disable button */
+}
+
+.pending-btn:active {
+  transform: translateY(2px); /* Push down by 2 pixels when the Disable button is pressed */
+}
+
+.approve-btn {
+  /* Active button styling */
+  padding: 0 0.5rem;
+  border: 2px solid #024502;
+  border-radius: 1rem;
+  font-size: smaller;
+  color: white;
+  background-color: #007700; /* Initial background color for Active button */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+.approve-btn:hover {
+  background-color: #00cc00; /* Change background color on hover for Active button */
+}
+
+.approve-btn:active {
+  transform: translateY(2px); /* Push down by 2 pixels when the Active button is pressed */
+}

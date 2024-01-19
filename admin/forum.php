@@ -21,7 +21,7 @@
                     </div>
 
                     <div class="card-body">
-                        <table class="table table-hover" id="Table">
+                        <table class="table table-hover align-middle" id="Table">
                             <thead>
                                 <tr>
                                   <th scope="col">#</th>
@@ -67,8 +67,6 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
       </div>
       <div class="mb-3" id="commentsContent">
       </div>
-    </div>
-    <div class="modal-footer">
     </div>
     `;
     modalForm.insertAdjacentHTML('beforeend', bodyHTMLData);
@@ -128,7 +126,7 @@ $(document).ready(function(e) {
         if(data.error){
           console.log(data.error)
         }else{
-          location.reload()
+          
         }
       }
     })
@@ -163,7 +161,7 @@ function updateCommentData(data){
         id: comment.id,
         forumId: comment.forumId,
         comments: comment.comments,
-        userId: comment.userId,
+        studentId: comment.studentId,
         timestamp: comment.timestamp
       });    
     });
@@ -196,15 +194,15 @@ function updateSource(){
     let i = 1;
 
     forumData.forEach( data => {
-      const comment = commentData.find(comment => comment.forumId === data.id);
+      const comment = commentData.filter(comment => comment.forumId === data.id);
       
       const tableHTMLData = `
       <tr>
-        <th scope="row">${i++}</th>
+        <th scope="row" >${i++}</th>
         <td>${data.topic}</td>
         <td>${data.created}</td>
         <td>${data.timestamp}</td>
-        <td>${comment ? comment.count : 0}</td>
+        <td class="text-center">${comment ? comment.length : 0}</td>
         <td>
           <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalt" data-bs-whatever="View" data-id="${data.id}"
           data-topic="${data.topic}" data-created="${data.created}" data-timestamp="${data.timestamp}" data-content="${data.content}" data-image="${data.img}">View</button>
@@ -218,7 +216,9 @@ function updateSource(){
       $('#Table').DataTable();
     });
 }
+setInterval(() => {
+  fetchData();
+}, 500);
 
-fetchData();
 })
                 </script>

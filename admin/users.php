@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${data.status}</td>
         <td>
           <button class="btn btn-danger" role="button">Delete</button>
-          <button class="btn btn-warning" role="button">Disable</button>
         </td>
       </tr>
       `;
@@ -82,7 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
   let table = new DataTable('#userTable', {
     responsive: true
   });
+  setInterval(() => {
+    fetchuserData();
+  }, 500);
 
-  fetchuserData();
 })
 </script>

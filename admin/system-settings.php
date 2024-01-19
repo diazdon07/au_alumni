@@ -8,6 +8,16 @@
                           <?php 
                           $result = mysqli_query($conn,'SELECT * FROM `system`');
                           while($row = mysqli_fetch_assoc($result)):
+                            if($row["logoType"]!==null&&$row["logoData"]!==null){
+                                $logo = 'data:'.$row["logoType"].';base64,'.base64_encode($row["logoData"]);
+                            }else{
+                                $logo = null;
+                            }
+                            if($row["aboutType"]!==null&&$row["aboutData"]!==null){
+                                $aboutPhoto = 'data:'.$row["aboutType"].';base64,'.base64_encode($row["aboutData"]);
+                            }else{
+                                $aboutPhoto = null;
+                            }
                           ?>
                             <input type="hidden" name="id" value="<?= $row['id'] ?>">
                             <div class="mb-3">
@@ -20,21 +30,21 @@
                             </div>
                             <div class="mb-3">
                                 <label for="contact" class="form-label">Contact</label>
-                                <input type="tel" class="form-control" name="contact" value="<?= $row['contact'] ?>">
+                                <input type="tel" class="form-control" name="contact" id="mobile" value="<?= $row['contact'] ?>">
                             </div>
                             <div class="mb-3 text-center">
-                                <img src="../image/<?= $row['logo'] ?? 'image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image1">
+                                <img src="<?= $logo ?? '../image/image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image1">
                             </div>
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>
-                                <input type="file" class="form-control"  accept="image/*" name="file1" id="imagein1">
+                                <input type="file" class="form-control"  accept="image/*" name="logo" id="imagein1">
                             </div>
                             <div class="mb-3 text-center">
-                                <img src="../image/<?= $row['aboutimage'] ?? 'image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image2">
+                                <img src="<?= $aboutPhoto ?? '../image/image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image2">
                             </div>
                             <div class="mb-3">
                                 <label for="aboutImage" class="form-label">About image</label>
-                                <input type="file" class="form-control"  accept="image/*" name="file2" id="imagein2" value="<?= $row['aboutimage'] ?>">
+                                <input type="file" class="form-control"  accept="image/*" name="aboutImage" id="imagein2">
                             </div>
                             <div class="mb-3">
                                 <label for="aboutContent" class="form-label">About Content</label>
@@ -50,18 +60,29 @@
                     </div>
                 </div>
 <script>
-const systemname = document.getElementsByName('systemName').value
-const email = document.getElementsByName('email').value
-const contact = document.getElementsByName('contact').value
-const logo = document.getElementsByName('logo')
-const aboutimage = document.getElementsByName('aboutImage')
-const aboutcontent = document.getElementsByName('aboutContent').value
+$('#mobile').keydown(function(event) {
+    if(!isNaN(event.key) || event.key === 'Backspace') {
+        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+            event.preventDefault();
+        }
+    }else{
+        event.preventDefault();       
+    }
+})
     
 $(document).ready(function(e) {
     $('#systemForm').on('submit',function(e) {
       e.preventDefault();
 
-        if(!systemname || !email || !contact || !logo.value || !aboutimage.value || !aboutcontent) {
+        const systemname = $('input[name="systemName"]').val();
+        const email = $('input[name="email"]').val();
+        const contact = $('input[name="contact"]').val();
+        const logo = $('input[name="logo"]').val();
+        const aboutimage = $('input[name="aboutImage"]').val();
+        const aboutcontent = $('textarea[name="aboutContent"]').val();
+
+
+        if(!systemname || !email || !contact || !logo || !aboutimage || !aboutcontent) {
             console.log('Please input all details.');
         } else {
             $.ajax({

@@ -144,11 +144,10 @@ function updateSource(){
             }else{
               const modalData = document.querySelector('.modal-body');
               modalData.innerHTML = '';
-              if(data.status===0){
-                $btnStatus = `<button class="disable-btn" id="status" data-status="1" data-id="${data.userId}">Disable</button>`
-              }else{
-                $btnStatus = `<button class="active-btn" id="status" data-status="0" data-id="${data.userId}">Active</button>`
-              }
+
+              btnStatus = `<button class="${data.status === 0 ? 'disable-btn' : 'active-btn'}" id="status" 
+              data-status="${data.status === 0 ? 1 : 0}" data-id="${data.userId}">${data.status === 0 ? 'Disable' : 'Active'}</button>`;
+
               const modalHTMLData = `
               <div class="row">
                 <div class="col">
@@ -176,7 +175,7 @@ function updateSource(){
                     <div class="col">Student No:</div>
                     <div class="col"><b>${data.stdNo}</b></div>
                     <div class="col">Account Status:</div>
-                    <div class="col">${$btnStatus}</button></div>
+                    <div class="col">${btnStatus}</button></div>
                   </div>
                   <div class="row g-0">
                     <div class="col">Email: </div>
@@ -194,12 +193,13 @@ function updateSource(){
                   </div>
                   <div class="row g-0">
                     <div class="col">Address: </div>
-                    <div class="col"><b>${data.address}</b></div>
+                    <div class="col-md-9"><b>${data.address}</b></div>
                   </div>
                   <div class="row g-0">
                     <div class="col">City: </div>
-                    <div class="col"><b>${data.city}</b></div>
+                    <div class="col-md-9"><b>${data.city}</b></div>
                   </div>
+                  <hr>
                 </div>
               </div>
               `;
@@ -221,7 +221,7 @@ function updateSource(){
                         console.log(data.error);
                       }else{
                         console.log(data);
-                        location.reload();
+                        
                       }
                     }
                   })
@@ -234,7 +234,9 @@ function updateSource(){
     })
 
 }
+setInterval(() => {
+  fetchAlumniData();
+}, 500);
 
-fetchAlumniData();
 })
                 </script>

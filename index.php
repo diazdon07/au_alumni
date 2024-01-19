@@ -29,7 +29,11 @@
   include $page.'.php';
 
 ?>
-<footer>@AuCiteAlumniCapstone</footer>
+<footer class="bg-dark">
+  <h6 class="text-white" style="color: white;">Contact Us:</h6>
+  <span class="systemContact text-white"></span>
+  <p class="systemEmail text-white"></p>
+</footer>
 </body>
 </html>
 <script src="js/systemSetting.js"></script>

@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if(data.error){
             console.log(data.error)
           }else{
-            location.reload()
+            
           }
         }
       })
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(data.error);
           }else{
             console.log(data);
-            location.reload();
+            
           }
         }
         })
@@ -192,7 +192,9 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+  setInterval(() => {
+    fetchGalleryData();
+  }, 500);
 
-  fetchGalleryData();
 })
                 </script>

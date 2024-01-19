@@ -149,7 +149,7 @@ $(document).ready(function(e) {
         if(data.error){
           console.log(data.error)
         }else{
-          location.reload()
+          
         }
       }
     })
@@ -247,7 +247,9 @@ function updateSource(){
       $('#Table').DataTable();
     });
 }
+setInterval(() => {
+  fetchData();
+}, 500);
 
-fetchData();
 })
                 </script>
