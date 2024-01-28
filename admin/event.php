@@ -102,7 +102,7 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
       <input type="text" class="form-control" name="title" placeholder="Title">
     </div>
     <div class="mb-3 text-center">
-      <img src="../image/image-placeholder.png" alt="image" width="300" class="rounded img-thumbnail" id="images">
+      <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="300" class="rounded img-thumbnail" id="images">
     </div>
     <div class="mb-3">
       <input type="file" class="form-control" accept="image/*" id="imagein" name="image">
@@ -147,9 +147,13 @@ $(document).ready(function(e) {
       },
       success: function(data) {
         if(data.error){
-          console.log(data.error)
+          console.log(data.error);
+          showMessage('error',data.error);
         }else{
-          location.reload()
+          showMessage('success',data);
+          setInterval(() => {
+            location.reload();
+          }, 5000);
         }
       }
     })
@@ -221,33 +225,38 @@ function fetchData() {
     .then(() => updateSource());
 }
 
-function updateSource(){
+function updateSource() {
   const tableData = document.querySelector('.Tbody');
-    tableData.innerHTML = '';
-    let i = 1;
+  tableData.innerHTML = '';
+  let i = 1;
 
-    eventData.forEach( data => {
-      const commit = commitedData.find(commited => course.eventId === data.id);
-      const tableHTMLData = `
+  eventData.forEach((data) => {
+    let commit = commitedData.filter((commited) => commited.eventId === data.id);
+
+    // Using template literals for better readability
+    const tableHTMLData = `
       <tr>
         <th scope="row">${i++}</th>
         <td>${data.title}</td>
         <td>${data.date}</td>
-        <td class="text-center">${commit ? commit.count : 0}</td>
+        <td class="text-center">${commit.length}</td>
         <td>
           <button class="btn btn-danger" role="button">Delete</button>
-          <button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#modalt" data-id="${data.id}" data-title="${data.title}" data-date="${data.date}" data-timestart="${data.timestart}" data-timeend="${data.timeend}"
-          data-location="${data.location}" data-desc="${data.description}" data-image="${data.image}" data-url="${data.url}" role="button"  data-bs-whatever="Edit">Edit</button>
+          <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalt" data-id="${data.id}" data-title="${data.title}" data-date="${data.date}" data-timestart="${data.timestart}" data-timeend="${data.timeend}" data-location="${data.location}" data-desc="${data.description}" data-image="${data.image}" data-url="${data.url}" role="button" data-bs-whatever="Edit">Edit</button>
         </td>
       </tr>
-      `;
-      tableData.insertAdjacentHTML('beforeend', tableHTMLData);
-    });
-    $(document).ready( function() {
-      $('#Table').DataTable();
-    });
+    `;
+
+    tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+  });
+
+  // Make sure jQuery and DataTables scripts are included before this point
+  $(document).ready(function () {
+    $('#Table').DataTable();
+  });
 }
 
-fetchData();
+  fetchData();
+
 })
                 </script>

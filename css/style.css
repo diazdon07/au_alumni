@@ -35,25 +35,6 @@ section{
     position: relative;
     color: red;
 }
-/* message */
-.message-box {
-    display: none;
-    position: fixed;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 35px 20px 20px 20px;
-    color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
-}
-.close-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
-}
 .area-content{
     padding: 1rem;
     background: white; 
@@ -79,6 +60,11 @@ footer{
     font-weight: bold;
 }
 
+.image-title{
+    text-shadow: 0 0 3px white, 0 0 5px whitesmoke;
+    font-weight: bolder;
+}
+
 .logo {
     width: 80px;
     margin: auto;
@@ -93,6 +79,16 @@ footer{
         0px 0px 0px 5px #ecf0f3,
         8px 8px 15px #a7aaa7,
         -8px -8px 15px #fff;
+}
+
+.profileImg{
+  width: 3.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0px 0px 3px #5f5f5f,
+      0px 0px 0px 4px gold,
+      3px 3px 15px grey,
+      -3px -3px 15px grey;
 }
 
 .box-form{
@@ -153,3 +149,225 @@ footer{
   .active-btn:active {
     transform: translateY(2px); /* Push down by 2 pixels when the Active button is pressed */
   }
+
+.card-list{
+  margin: 0.5rem 0rem;
+  cursor: pointer;
+}
+.text-note{
+  font-size: x-small;
+  border: 2px solid;
+  border-radius: 1rem;
+  padding: 0px 4px;
+}
+.partTime{
+  border-color: blue;
+  color: blue;
+  background-color: rgb(188, 221, 254);
+}
+.fullTime{
+  border-color: green;
+  color: green;
+  background-color: rgb(226, 255, 182);
+}
+.contractual{
+  border-color: gray;
+  color: gray;
+  background-color: rgb(223, 223, 223);
+}
+.All{
+  border-color: goldenrod;
+  color: goldenrod;
+  background-color: rgb(255, 244, 180);
+}
+
+.header-report{
+  background-color: #333;
+  color: #fff;
+  padding-top: 0.5rem;
+  text-align: center;
+}
+
+.pending-btn {
+  /* Disable button styling */
+  padding: 0 0.5rem;
+  border: 2px solid #616161;
+  border-radius: 1rem;
+  font-size: smaller;
+  color: white;
+  background-color: #7e7e7e; /* Initial background color for Disable button */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+.pending-btn:hover {
+  color:#000;
+  background-color: #b9b9b9; /* Change background color on hover for Disable button */
+}
+
+.pending-btn:active {
+  transform: translateY(2px); /* Push down by 2 pixels when the Disable button is pressed */
+}
+
+.approve-btn {
+  /* Active button styling */
+  padding: 0 0.5rem;
+  border: 2px solid #024502;
+  border-radius: 1rem;
+  font-size: smaller;
+  color: white;
+  background-color: #007700; /* Initial background color for Active button */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+.approve-btn:hover {
+  background-color: #00cc00; /* Change background color on hover for Active button */
+}
+
+.approve-btn:active {
+  transform: translateY(2px); /* Push down by 2 pixels when the Active button is pressed */
+}
+
+.student {
+  /* Disable button styling */
+  margin: auto;
+  text-align: center;
+  width: 4.5rem;
+  padding: 0 0.5rem;
+  border: 2px solid #c8a243;
+  border-radius: 1rem;
+  font-size: smaller;
+  color: black;
+  background-color: #FFCE54; /* Initial background color for Disable button */
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Add transitions for background color and transform */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+:root {
+  --dark: #34495E;
+  --light: #ffffff;
+  --success: #0ABF30;
+  --error: #E24D4C;
+  --warning: #E9BD0C;
+  --info: #3498DB;
+}
+.notifications {
+  position: fixed;
+  top: 30px;
+  right: 20px;
+  z-index: 100;
+}
+.notifications :where(.bread, .column) {
+  display: flex;
+  align-items: center;
+}
+.notifications .bread {
+  width: 400px;
+  position: relative;
+  overflow: hidden;
+  list-style: none;
+  border-radius: 4px;
+  padding: 16px 17px;
+  margin-bottom: 10px;
+  background: var(--light);
+  justify-content: space-between;
+  animation: show_bread 0.3s ease forwards;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+@keyframes show_bread {
+  0% {
+    transform: translateX(100%);
+  }
+  40% {
+    transform: translateX(-5%);
+  }
+  80% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-10px);
+  }
+}
+.notifications .bread.hide {
+  animation: hide_bread 0.3s ease forwards;
+}
+@keyframes hide_bread {
+  0% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(0%);
+  }
+  80% {
+    transform: translateX(-5%);
+  }
+  100% {
+    transform: translateX(calc(100% + 20px));
+  }
+}
+.bread::before {
+  position: absolute;
+  content: "";
+  height: 3px;
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
+  animation: progress 5s linear forwards;
+}
+@keyframes progress {
+  100% {
+    width: 0%;
+  }
+}
+.bread.success::before, .btn#success {
+  background: var(--success);
+}
+.bread.error::before, .btn#error {
+  background: var(--error);
+}
+.bread.warning::before, .btn#warning {
+  background: var(--warning);
+}
+.bread.info::before, .btn#info {
+  background: var(--info);
+}
+.bread .column i {
+  font-size: 1.75rem;
+}
+.bread.success .column i {
+  color: var(--success);
+}
+.bread.error .column i {
+  color: var(--error);
+}
+.bread.warning .column i {
+  color: var(--warning);
+}
+.bread.info .column i {
+  color: var(--info);
+}
+.bread .column span {
+  font-size: 1.07rem;
+  margin-left: 12px;
+}
+.bread i:last-child {
+  color: #aeb0d7;
+  cursor: pointer;
+}
+.bread i:last-child:hover {
+  color: var(--dark);
+}
+
+@media screen and (max-width: 530px) {
+  .notifications {
+    width: 95%;
+  }
+  .notifications .bread {
+    width: 100%;
+    font-size: 1rem;
+    margin-left: 20px;
+  }
+}

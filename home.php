@@ -25,17 +25,20 @@
         while ($row = $result->fetch_assoc()) {
             $active_class = ($item_counter == 0) ? 'active' : ''; // Add 'active' class to first item
       ?>
-        <div class="carousel-item <?= $active_class ?>" data-bs-interval="4000">
+        <div class="carousel-item position-relative <?= $active_class ?>" data-bs-interval="4000">
+          <div class="container-fluid position-absolute start-50 translate-middle" style="top: 15rem;">
             <img class="img-fluid d-block w-30 mx-auto" src="<?php 
             if($row['imgData']!==null&&$row['imgType']!==null){
               echo 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
             }else{
-              echo 'image/image-placeholder.png';
+              echo 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
             } 
             ?>" alt="Slide <?= $item_counter + 1 ?>">
-            <div class="carousel-caption d-none d-md-block">
-                <h5 class="text-warning"><?= $row['title'] ?></h5>
-                <p class="image-content"><?= $row['schedule'].' '.$row['time'] ?></p>
+          </div>
+            <div class="carousel-caption d-none d-md-block position-absolute start-50 translate-middle" style="top: 18rem;">
+                <h5 class="image-title"><?= $row['title'] ?></h5>
+                <span class="image-content"><?= $row['schedule'].' '.$row['timestart'].'-'.$row['timeend'] ?> </span>
+                <p class="image-content"><?= $row['shortdesc'] ?></p>
             </div>
         </div>
       <?php
@@ -52,30 +55,10 @@
       </button>
   </div>
 </header>
-<!-- modal alert -->
-<div class="message-box" id="messageBox">
-  <span class="close-button btn-close " role="button"></span>
-  <p id="messageText"></p>
-</div>
 
-<div class="container-fluid" style="margin-top: 1rem;">
-  <ul class="nav nav-tabs">
-    <li class="nav-item" role="presentation">
-      <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
-      data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
-      data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
-      data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
-      data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
-    </li>
+<div class="container-fluid" style="margin: 1rem 0rem;">
+  <ul class="nav nav-tabs" id="items">
+    
   </ul>
   <section class="tab-content area-content" id="myTabContent">
     <!-- Event Tabs -->
@@ -161,7 +144,29 @@
     </div>
     <!-- Gallery Tabs  -->
     <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
-      Gallery Content.
+      <div class="container-fluid px-4">
+        <div class="row g-5 card-row">
+          
+        </div>
+      </div>
+      <script src="js/galleryView.js"></script>
+    </div>
+    <!-- Job Tabs  -->
+    <div class="tab-pane fade" id="job" role="tabpanel" aria-labelledby="job-tab">
+      <div id="jobList">
+        <table class="table table-hover" id="jobTable">
+          <thead>
+            <th class="text-center">Job Offers</th>
+          </thead>
+          <tbody class="jobOfferData">
+            
+          </tbody>
+        </table>
+      </div>
+      <div id="viewJob">
+
+      </div>
+      <script src="js/jobOffers.js"></script>
     </div>
     <!-- Forum Tabs  -->
     <div class="tab-pane fade" id="forum" role="tabpanel" aria-labelledby="forum-tab">
@@ -178,25 +183,9 @@
           </tbody>
         </table>
         <!-- create topic -->
-        <form id="createPost" class="card" enctype="multipart/form-data" style="padding: 1rem;">
-          <div class="row g-3">
-            <div class="col-8">
-              <div class="mb-3">
-                <input type="text" name="topic" id="topicId" class="form-control" placeholder="Topic Title">
-              </div>
-              <div class="mb-3">
-                <textarea class="form-control" rows="5" name="content" id="contentId" placeholder="Topic Content"></textarea>
-              </div>
-            </div>
-            <div class="col-3">
-              <img src="image/image-placeholder.png" class="rounded mx-auto d-block" style="width: 10rem;" id="dpl">
-              <input type="file" class="form-control" name="file1" accept="image/*" id="postImg">
-            </div>
-            <div class="col-sm">
-              <input type="submit" class="btn btn-primary" value="Create">
-            </div>
-          </div>
-        </form>
+        <div id="createTopic">
+          
+        </div>
       </div>
       <!-- post view -->
       <div id="post">

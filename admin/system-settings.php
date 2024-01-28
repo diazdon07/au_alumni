@@ -5,63 +5,114 @@
                     </div>
                     <div class="card-body">
                         <form id="systemForm" enctype="multipart/form-data">
-                          <?php 
-                          $result = mysqli_query($conn,'SELECT * FROM `system`');
-                          while($row = mysqli_fetch_assoc($result)):
-                          ?>
-                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                            <input type="hidden" name="id">
                             <div class="mb-3">
                                 <label for="systemName" class="form-label">System Name</label>
-                                <input type="text" class="form-control" name="systemName" value="<?= $row['systemname'] ?>">
+                                <input type="text" class="form-control" name="systemName">
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" value="<?= $row['email'] ?>">
+                                <input type="email" class="form-control" name="email">
                             </div>
                             <div class="mb-3">
                                 <label for="contact" class="form-label">Contact</label>
-                                <input type="tel" class="form-control" name="contact" value="<?= $row['contact'] ?>">
+                                <input type="tel" class="form-control" name="contact" id="mobile">
                             </div>
                             <div class="mb-3 text-center">
-                                <img src="../image/<?= $row['logo'] ?? 'image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image1">
+                                <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="150" class="rounded img-thumbnail" id="image1">
                             </div>
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Logo</label>
-                                <input type="file" class="form-control"  accept="image/*" name="file1" id="imagein1">
+                                <input type="file" class="form-control"  accept="image/*" name="logo" id="imagein1">
                             </div>
                             <div class="mb-3 text-center">
-                                <img src="../image/<?= $row['aboutimage'] ?? 'image-placeholder.png' ?>" alt="image" width="150" class="rounded img-thumbnail" id="image2">
+                                <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="150" class="rounded img-thumbnail" id="image2">
                             </div>
                             <div class="mb-3">
                                 <label for="aboutImage" class="form-label">About image</label>
-                                <input type="file" class="form-control"  accept="image/*" name="file2" id="imagein2" value="<?= $row['aboutimage'] ?>">
+                                <input type="file" class="form-control"  accept="image/*" name="aboutImage" id="imagein2">
                             </div>
                             <div class="mb-3">
                                 <label for="aboutContent" class="form-label">About Content</label>
-                                <textarea class="form-control" name="aboutContent" rows="3"><?= $row['aboutcontent'] ?></textarea>
+                                <textarea class="form-control" name="aboutContent" rows="3"></textarea>
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <input type="submit" class="btn btn-primary" name="submit" value="Save">
                             </div>
-                          <?php 
-                          endwhile;
-                          ?>
                         </form>
                     </div>
                 </div>
 <script>
-const systemname = document.getElementsByName('systemName').value
-const email = document.getElementsByName('email').value
-const contact = document.getElementsByName('contact').value
-const logo = document.getElementsByName('logo')
-const aboutimage = document.getElementsByName('aboutImage')
-const aboutcontent = document.getElementsByName('aboutContent').value
+document.addEventListener('DOMContentLoaded', function () {
+
+  const systemData2 = [];
+  
+  function updatesystemData(data) {
+      
+    systemData2.length = 0; // Clear the existing systemData array
+    // Push each fetched event to the systemData array
+      data.forEach(system => {
+        systemData2.push({
+          id: system.id,
+          systemname: system.systemname,
+          email: system.email,
+          contact: system.contact,
+          logo: system.logo,
+          aboutimage: system.aboutimage,
+          aboutcontent: system.aboutcontent
+        });
+      });
+  }
+
+  function fetchSystemData() {
+    const systemPromise = fetch('../php/system.php')
+      .then(response => response.json()) // Assuming the PHP returns JSON data
+      .then(data => {
+
+        updatesystemData(data);
+      })
+    .catch(error => console.error('Error fetching gallery data:', error));
+    systemPromise.then(() => updateSource());
+  }
+
+  function updateSource(){
+    systemData2.forEach(data =>{
+      $('input[name="systemName"]').val(data.systemname);
+      $('input[name="id"]').val(data.id);
+      $('input[name="email"]').val(data.email);
+      $('input[name="contact"]').val(data.contact);
+      $('#image1').attr('src',data.logo);
+      $('#image2').attr('src',data.aboutimage);
+      $('textarea[name="aboutContent"]').html(data.aboutcontent);
+    })
+    
+  }
+
+  fetchSystemData();
+
+$('#mobile').keydown(function(event) {
+    if(!isNaN(event.key) || event.key === 'Backspace') {
+        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+            event.preventDefault();
+        }
+    }else{
+        event.preventDefault();       
+    }
+})
     
 $(document).ready(function(e) {
     $('#systemForm').on('submit',function(e) {
       e.preventDefault();
 
-        if(!systemname || !email || !contact || !logo.value || !aboutimage.value || !aboutcontent) {
+        const systemname = $('input[name="systemName"]').val();
+        const email = $('input[name="email"]').val();
+        const contact = $('input[name="contact"]').val();
+        const logo = $('input[name="logo"]').val();
+        const aboutimage = $('input[name="aboutImage"]').val();
+        const aboutcontent = $('textarea[name="aboutContent"]').val();
+
+
+        if(!systemname || !email || !contact || !aboutcontent) {
             console.log('Please input all details.');
         } else {
             $.ajax({
@@ -76,7 +127,15 @@ $(document).ready(function(e) {
                     console.log('error: ', err);
                 },
                 success: function(data) {
-                    console.log(data);
+                  if(data.error){
+                    console.log(data.error);
+                    showMessage('error',data.error);
+                  }else{
+                    showMessage('success',data);
+                    setInterval(() => {
+                      location.reload();
+                    }, 5000);
+                  }
                 }
             });
         }
@@ -94,5 +153,6 @@ $('#imagein2').on('change', function(event) {
   if (file) {
     $('#image2').attr('src', URL.createObjectURL(file))
   }
+})
 })
 </script>

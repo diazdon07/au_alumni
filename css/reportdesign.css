@@ -1,0 +1,33 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  text-align: left;
+  padding: 0rem 0.5rem;
+}
+
+td {
+  font-size: 14px;
+}
+
+th {
+  font-size: 13px;
+  padding: 0.5rem;
+  background-color: #4CAF50;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+@media print{
+  body {
+    display: block;
+  }
+}

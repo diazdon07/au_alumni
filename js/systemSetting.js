@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (systemData.length === 0 || systemData[0].systemname === null) {
           names.textContent = defaultText;
         } else {
+          names.style.fontSize = '1.5rem';
           names.textContent = systemData[0].systemname;
         }
       });
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (systemData.length === 0 || systemData[0].contact === null) {
           contacts.textContent = defaultText;
         } else {
-          contacts.textContent = systemData[0].contact;
+          contacts.textContent = '(+63)'+systemData[0].contact;
         }
       });
 
@@ -92,7 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     }
-  
-    fetchsystemData();
-  
+
+    setInterval(() => {
+      fetchsystemData();
+    }, 500);
 });

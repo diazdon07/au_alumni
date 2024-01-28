@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   
     const eventData = [];
+    const commitData = [];
   
     function updateCalendar() {
       calendarDays.innerHTML = '';
@@ -122,6 +123,8 @@ document.addEventListener('DOMContentLoaded', function () {
       eventDetailsContainer.innerHTML = '';
       eventDetailsContent.innerHTML = '';
       console.log(`You clicked on: ${clickedDate.toDateString()}`);
+
+      let user = sessionStorage.user && sessionStorage.user.trim() !== '' ? JSON.parse(sessionStorage.user) : null;
   
       if (events.length > 0) {
   
@@ -138,8 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
         eventRow.classList.add('event-row');
         const eventTitle = document.createElement('span');
         eventTitle.textContent = event.title;
-        const eventTime = document.createElement('span');
-        eventTime.textContent = ` -> ${event.time}`;
+        const eventTime = document.createElement('p');
+        eventTime.textContent = `(${event.timestart} - ${event.timeend})`;
         eventRow.appendChild(eventTitle);
         eventRow.appendChild(eventTime);
         eventDetailsContainer.appendChild(eventRow);
@@ -152,11 +155,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const eventTitle = document.createElement('h3');
         eventTitle.textContent = event.title;
         const eventTime = document.createElement('p');
-        eventTime.textContent = `(${event.time}) at ${event.location}`;
+        eventTime.textContent = `(${event.timestart} - ${event.timeend}) at ${event.location}`;
         const eventImage = document.createElement('img');
         eventImage.classList.add('img-fluid');
         if(event.image === null){
-          eventImage.src = 'image/image-placeholder.png';
+          eventImage.src = 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
         }else{
           eventImage.src = event.image;
         }
@@ -164,18 +167,57 @@ document.addEventListener('DOMContentLoaded', function () {
         eventDesc.classList.add('lh-sm');
         eventDesc.textContent = event.description;
         const eventUrl = document.createElement('a');
-        eventUrl.classList.add('btn','btn-primary','me-md-2');
         eventUrl.href = event.url;
-        eventUrl.textContent = 'URL'
-        
+        eventUrl.textContent = event.url;
+        const commit = document.createElement('a');
+        commit.classList.add('btn','btn-primary','me-md-2','commitedBtn');
+        commit.setAttribute('data-id',event.id);
+        commit.setAttribute('data-user',user.id);
+        commit.textContent = 'Commite';
+
         eventRow.appendChild(eventTitle);
         eventRow.appendChild(eventTime);
         eventRow.appendChild(eventImage);
         eventRow.appendChild(eventDesc);
+       
         if(event.url !== null){
           eventRow.appendChild(eventUrl);
         }
+        var commited = commitData.filter(commit => commit.eventId === event.id);
+        if(user != null){
+          if(commited.length === 0 ){
+            eventRow.appendChild(commit);
+          }
+        }
+
         eventDetailsContent.appendChild(eventRow);
+      });
+      document.querySelectorAll('.commitedBtn').forEach(element => {
+        element.addEventListener('click', function () {
+          const topicId = this.getAttribute('data-id');
+          const userId = this.getAttribute('data-user');
+          console.log('Commite button click. EventId:',topicId,'UserId:',userId);
+  
+          $.ajax({
+          type: 'POST',
+          url: 'php/action.php?action=eventCommited',
+          data: {
+            id: topicId,
+            user: userId
+          },
+          error: function(err) {
+            console.log('error: ', err)
+          },
+          success: function(data) {
+            if(data.error){
+              console.log(data.error);
+            }else{
+              console.log(data);
+              location.reload();
+            }
+          }
+          })
+        });
       });
   
         document.getElementById('eventTitle').textContent = 'Schedule';
@@ -203,9 +245,11 @@ document.addEventListener('DOMContentLoaded', function () {
       // Push each fetched event to the eventData array
       data.forEach(event => {
         eventData.push({
+          id: event.id,
           title: event.title,
           date: event.date,
-          time: event.time,
+          timestart: event.timestart,
+          timeend: event.timeend,
           image: event.image,
           location: event.location,
           description: event.description,
@@ -213,9 +257,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
     }
+
+    function updateCommitData(data){
+
+      commitData.length = 0;
+
+      data.forEach(commit => {
+        commitData.push({
+          id: commit.id,
+          eventId: commit.eventId,
+          userId: commit.userId
+        })
+      })
+    }
   
     function fetchEventData() {
-      fetch('php/events.php')
+      const eventPromise = fetch('php/events.php')
         .then(response => response.json()) // Assuming the PHP returns JSON data
         .then(data => {
           // Use the received data as the eventData
@@ -223,9 +280,21 @@ document.addEventListener('DOMContentLoaded', function () {
           updateCalendar();
         })
         .catch(error => console.error('Error fetching event data:', error));
+
+      const commitPromise = fetch('php/commited.php')
+        .then(response => response.json())
+        .then(data => {
+          updateCommitData(data);
+        })
+        .catch(error => console.error('Error fetching commit data:', error));
+
+        Promise.all([eventPromise,commitPromise])
+    .then(() => updateCalendar());
     }
 
-    fetchEventData();
-    updateCalendar();
-  
+    
+    setInterval(() => {
+      fetchEventData();
+      updateCalendar();
+    }, 500);
   });

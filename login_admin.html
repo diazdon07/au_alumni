@@ -20,11 +20,8 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
 <body style="background: white;">
-    <!-- modal alert -->
-    <div class="message-box" id="messageBox">
-        <span class="close-button btn-close " role="button"></span>
-        <p id="messageText"></p>
-    </div>
+    
+    <ul class="notifications"></ul>
     <!-- Login Form -->
     <div class="card box-form" id="login-form">
         <div class="logo">
@@ -103,6 +100,7 @@
             </div>
         </form>
     </div>
+<script src="js/showMessage.js"></script>
 <script src="js/token.js"></script>
 <script src="js/systemSetting.js"></script>
 <script>    
@@ -175,7 +173,7 @@ $(document).ready(function() {
     console.log('Click Login.');
     if(!emailLog.value.length || !pwdLog.value.length){
         console.log('No Input email and password.');
-        showAlert('error','No Input email and password.');
+        showMessage('error','No Input email and password.');
     }else{
         console.log('Details are ready to process.');
         $.ajax({
@@ -192,12 +190,12 @@ $(document).ready(function() {
             success: function(data) {
                 console.log(data.error);
                 if(data.error){
-                    showAlert('error',data.error);
+                    showMessage('error',data.error);
                 }else{
                     setTimeout(function(){
                         data.authToken = generateToken(data.email);
                         sessionStorage.user = JSON.stringify(data);
-                        showAlert('success','Account successfully login.');
+                        showMessage('success','Account successfully login.');
                         location.replace('admin/')
                     },500)
                 }
@@ -210,7 +208,7 @@ $(document).ready(function() {
     console.log('Click Submit forget password.');
     if(!emailForget.value.length){
         console.log('No email provide.');
-        showAlert('error','No email provide.');
+        showMessage('error','No email provide.');
     }else{
         console.log('Details are ready to process.');
         $.ajax({
@@ -232,25 +230,25 @@ $(document).ready(function() {
   $('#submit-register').click(function() {
     console.log('Click Registration.');
     if(!emailReg.value.length || !pwdReg.value.length || !firstname.value.length || !lastname.value.length || !mobile.value.length || !conPwd.value.length){
-        showAlert('error','Incomplete details.')
+        showMessage('error','Incomplete details.')
         console.log('Incomplete details.');
     }else if(firstname.value.length < 3){
-        showAlert('error','Invalid firstname must contain at least 3 letter.')
+        showMessage('error','Invalid firstname must contain at least 3 letter.')
         console.log('Invalid firstname must contain at least 3 letter.');
     }else if(lastname.value.lenth < 4){
-        showAlert('error','Invalid lastname must contain at least 4 letter.')
+        showMessage('error','Invalid lastname must contain at least 4 letter.')
         console.log('Invalid lastname must contain at least 4 letter.');
     }else if(!pwdReg.value.match(/[A-Z]/g)){
-        showAlert('error','Valid Password Must have uppercase letter.')
+        showMessage('error','Valid Password Must have uppercase letter.')
         console.log('Valid Password Must have uppercase letter.');
     }else if(!pwdReg.value.match(/[a-z]/g)){
-        showAlert('error','Valid Password Must have lowecase letter.')
+        showMessage('error','Valid Password Must have lowecase letter.')
         console.log('Valid Password Must have lowecase letter.');
     }else if(!pwdReg.value.match(/[0-9]/g)){
-        showAlert('error','Valid Password Must have at least one number.')
+        showMessage('error','Valid Password Must have at least one number.')
         console.log('Valid Password Must have at least one number.');
     }else if(!pwdReg.value.match(conPwd.value)){
-        showAlert('error','Confirm password not match.')
+        showMessage('error','Confirm password not match.')
         console.log('Confirm password not match.');
     }else{
         console.log('Details are ready to process.');
@@ -264,7 +262,8 @@ $(document).ready(function() {
                 email: emailReg.value,
                 password: pwdReg.value,
                 mobile: mobile.value,
-                userType: 'admin'
+                userType: 'admin',
+                type: '0'
             },
             error: err => {
                 console.log('Error: ', err);
@@ -272,42 +271,19 @@ $(document).ready(function() {
             success: function(data) {
                 console.log('Success data Recieve');
                 if(data.error){  
-                    showAlert(data.error);
+                    showMessage('error',data.error);
                 }else{
+                  showMessage('success', data);
                     setTimeout(function(){
-                        showAlert('success','Account successfully created.');
                         location.reload()
-                    },500)
+                    },3000)
                 }
             }
         })
     }
   })
 })
-//Alert
-const showAlert = (alert, message) => {
-    if(alert === 'error'){
-        messagePlaceholder.classList.add('bg-danger');
-    }else if(alert === 'success'){
-        messagePlaceholder.classList.add('bg-success');
-    }else{
-        messagePlaceholder.classList.add('bg-primary');
-    }
-    messagePlaceholder.style.display = "inline-block";
-    messageText.textContent = message;
-  }
-  
-messagePlaceholder.addEventListener('click', (event) => {
-    if (event.target.classList.contains('close-button')) {
-        const messageBox = event.target.closest('.message-box');
-        if (messageBox) {
-            messageBox.style.display = 'none';
-            messagePlaceholder.classList.remove('bg-danger');
-            messagePlaceholder.classList.remove('bg-success');
-            messagePlaceholder.classList.remove('bg-primary');
-        }
-    }
-});
+
 </script>
 </body>
 </body>

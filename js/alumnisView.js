@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const alumniData = [];
     const courseData = [];
   
-    for (var i = 1950; i <= currentYear; i++) {
+    for (let i = 1950; i <= currentYear; i++) {
       const optionYears = document.createElement("option");
       optionYears.innerHTML = i;
       optionYears.value = i;
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
       data.forEach(courses => {
         const optionCourses = document.createElement("option");
-        optionCourses.innerHTML = courses.course;
+        optionCourses.textContent = courses.course;
         optionCourses.value = courses.id;
         ddlCourses.appendChild(optionCourses);
       });
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
   
       data.forEach(alumni => {
         const alumniCourse = courseData.find(course => course.id === alumni.course);
-        if(alumni.photo === '' || alumni.photo === null){
-          var image = 'image/image-placeholder.png';
+        if(alumni.photo === undefined  || alumni.photo === null){
+          var image = 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
         }else{
           var image = alumni.photo;
         }
@@ -91,9 +91,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // alumniContent.appendChild(/* Create and append HTML elements */);
       });
     }
-  
-    function fetchCoursesData() {
-      fetch('php/courses.php')
+
+    function fetchData() {
+
+      const courseFetch = fetch('php/courses.php')
         .then(response => response.json()) // Assuming the PHP returns JSON data
         .then(data => {
           // Use the received data as the CoursesData
@@ -101,17 +102,17 @@ document.addEventListener('DOMContentLoaded', function () {
           updateCoursesData(data);
         })
         .catch(error => console.error('Error fetching courses data:', error));
-    }
-  
-    function fetchAlumniData() {
-      fetch('php/alumnis.php')
+
+      const alumniFetch = fetch('php/alumnis.php')
         .then(response => response.json()) // Assuming the PHP returns JSON data
         .then(data => {
           // Use the received data as the alumniData
-          updateAlumniData(data);
           displayFilteredResults(data);
+          updateAlumniData(data);
         })
         .catch(error => console.error('Error fetching alumni data:', error));
+
+        
     }
   
     // Add event listener to the Search button to handle filtering
@@ -141,6 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   
     // Call the fetch function initially to load all alumni data
-    fetchCoursesData();
-    fetchAlumniData();
+    fetchData();
+   
 });

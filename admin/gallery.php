@@ -100,9 +100,13 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         success: function(data) {
           if(data.error){
-            console.log(data.error)
+            console.log(data.error);
+            showMessage('error',data.error);
           }else{
-            location.reload()
+            showMessage('success',data);
+            setInterval(() => {
+              location.reload();
+            }, 5000);
           }
         }
       })
@@ -182,9 +186,12 @@ document.addEventListener('DOMContentLoaded', function () {
         success: function(data) {
           if(data.error){
             console.log(data.error);
+            showMessage('error',data.error);
           }else{
-            console.log(data);
-            location.reload();
+            showMessage('success',data);
+            setInterval(() => {
+              location.reload();
+            }, 5000);
           }
         }
         })
@@ -192,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
-
-  fetchGalleryData();
+    fetchGalleryData();
 })
                 </script>
