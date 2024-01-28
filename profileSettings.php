@@ -6,7 +6,7 @@
                 <div class="col-3">
                     <input type="hidden" name="id">
                     <div class="mb-3">
-                        <img alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
+                        <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
                     </div>
                     <div class="mb-3">
                         <input type="file" class="form-control" accept="image/*" id="imagein" name="image" >
@@ -47,17 +47,6 @@
                     <hr>
                     <div class="row">
                         <div class="col input-group">
-                            <span class="input-group-text" id="addon-email">@</span>
-                            <input type="email" class="form-control" aria-describedby="addon-email" name="email" placeholder="Email@example.com">
-                        </div>
-                        <div class="col input-group">
-                            <span class="input-group-text" id="addon-mobile">+63</span>
-                            <input type="tel" class="form-control" name="contact" id="mobile" aria-describedby="addon-mobile" placeholder="Mobile">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col input-group">
                             <span class="input-group-text" id="addon-course">Course</span>
                             <select name="course" id="courseDD" class="form-control" aria-describedby="addon-course">
                                 <option hidden>-Select Course-</option>
@@ -80,6 +69,33 @@
                     <hr>
                     <div class="row">
                         <div class="col">
+                            <select name="employmentStatus" id="status" class="form-control">
+                                <option hidden>-Select Employement Status-</option>
+                                <option value="0">Unemployed</option>
+                                <option value="1">Employed</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="position" class="form-control emplyStat" placeholder="Position" disabled>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="company" class="form-control emplyStat" placeholder="Company Name" disabled>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col input-group">
+                            <span class="input-group-text" id="addon-email">@</span>
+                            <input type="email" class="form-control" aria-describedby="addon-email" name="email" placeholder="Email@example.com">
+                        </div>
+                        <div class="col input-group">
+                            <span class="input-group-text" id="addon-mobile">+63</span>
+                            <input type="tel" class="form-control" name="contact" id="mobile" aria-describedby="addon-mobile" placeholder="Mobile">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col">
                             <input type="password" aria-label="Password" name="password" class="form-control" placeholder="Change Password">
                         </div>
                         <div class="col">
@@ -96,24 +112,60 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-let user = JSON.parse(sessionStorage.user);
+var profileForm = document.getElementById('profile');
+var loginForm = document.getElementById('formlogin');
+const profileImage = document.querySelector('#profileImage');
+const profilename = document.querySelector('#profileMenu');
+const logout = document.querySelector('#logout');
 
-$('#stdno').val(user.studentno);
-$('input[name="id"]').val(user.id);
-$('input[name="firstname"]').val(user.firstname);
-$('input[name="middlename"]').val(user.middlename);
-$('input[name="lastname"]').val(user.firstname);
-$('select[name="gender"]').val(user.gender);
-$('input[name="address"]').val(user.address);
-$('select[name="course"]').val(user.course);
-$('#imageHolder').attr('src', user.photo || 'image/image-placeholder.png');
-$('select[name="batch"]').val(user.batch);
+  window.onload = () =>{
+    let user = JSON.parse(sessionStorage.user || null);
+    if(user != null){
+        if(user.userType == 'admin'){
+            location.replace('admin/index.php');
+        }else{
+          loginForm.classList.add("d-none");
+          loginForm.classList.remove("d-flex");
+          profileForm.classList.add("d-block");
+          profileForm.classList.remove("d-none");
+          profilename.innerHTML = `${user.displayName}`;
+          $('#stdno').html(user.studentno);
+          $('input[name="id"]').val(user.id);
+          $('input[name="firstname"]').val(user.firstname);
+          $('input[name="middlename"]').val(user.middlename);
+          $('input[name="lastname"]').val(user.firstname);
+          $('input[name="city"]').val(user.city);
+          $('select[name="gender"]').val(user.gender);
+          $('input[name="address"]').val(user.address);
+          $('select[name="course"]').val(user.course);
+          $('select[name="employmentStatus"]').val(user.employmentStatus);
+          $('input[name="position"]').val(user.position);
+          $('input[name="comapny"]').val(user.comapny);
+          $('#imageHolder').attr('src', user.photo  || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
+          $('select[name="batch"]').val(user.batch);
 
-$('input[name="email"]').val(user.email);
-$('input[name="contact"]').val(user.contact);
+          $('input[name="email"]').val(user.email);
+          $('input[name="contact"]').val(user.contact);
 
-$('input[name="displayName"]').val(user.displayName);
-
+          $('input[name="displayName"]').val(user.displayName);
+          if(user.photo !== null){
+          profileImage.src = user.photo
+          
+          }
+          logout.addEventListener('click', () => {
+              sessionStorage.clear();
+              location.replace('index.php');
+          })
+        }
+    }else{
+      loginForm.classList.add("d-flex");
+      loginForm.classList.remove("d-none");
+      profileForm.classList.add("d-none");
+      profileForm.classList.remove("d-block");
+    }
+   
+  }
+    
 
 var ddlYears = document.getElementById("year");
 var currentYear = (new Date()).getFullYear();
@@ -142,6 +194,14 @@ $('#imagein').on('change', function(event) {
     }
 })
 
+$('#status').change(function (){
+    if ($(this).val() === '0') {
+        $('.emplyStat').prop('disabled', true);
+        $('.emplyStat').val(null);
+    } else {
+        $('.emplyStat').prop('disabled', false);
+    }
+})
 
 const courseData = [];
 
@@ -199,9 +259,13 @@ $(document).ready(function(e) {
           console.log(data.error)
         }else{
           console.log(data)
-          data.authToken = generateToken(data.email);
-          sessionStorage.user = JSON.stringify(data);
-          location.reload()
+          sessionStorage.clear();
+          showMessage('success','Updating profile please wait.');
+          setInterval(() => {
+            data.authToken = generateToken(data.email);
+            sessionStorage.user = JSON.stringify(data);
+            location.reload()
+          }, 5000);
         }
       }
     })

@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const jobData = [];
   const commentData = [];
   const forumData = [];
+  const adminData = [];
   
   function updateUserData(data) {
       
@@ -151,7 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
         displayName: user.displayName,
         email: user.email,
         users: user.users,
-        status: user.status
+        status: user.status,
+        type: user.type
       });
     });
   }
@@ -192,6 +194,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  function updateAdminData(data) {
+    
+    adminData.length = 0; // Clear the existing eventData array
+      // Push each fetched event to the alumniData array
+    data.forEach(admin => {
+      adminData.push({
+        id: admin.id,
+        firstname: admin.firstname,
+        middlename: admin.middlename,
+        lastname: admin.lastname,
+        gender: admin.gender,
+        photo: admin.photo
+      });
+    });
+  }
+
   function updateJobData(data) {
       
   jobData.length = 0; 
@@ -218,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
       forumData.push({
         id: forum.id,
         topic: forum.topic,
-        img: forum.img,
+        img: forum.photo,
         content: forum.content,
         created: forum.created,
         timestamp: forum.timestamp
@@ -236,12 +254,21 @@ document.addEventListener('DOMContentLoaded', function () {
         forumId: comment.forumId,
         comments: comment.comments,
         studentId: comment.studentId,
+        adminId: comment.adminId,
         timestamp: comment.timestamp
       });
     });
   }
   
   function fetchData() {
+
+    const adminPromise = fetch('../php/admins.php')
+    .then(response => response.json()) // Assuming the PHP returns JSON data
+    .then(data => {
+      updateAdminData(data);
+    })
+    .catch(error => console.error('Error fetching admin data:', error));
+    
     const userPromise = fetch('../php/users.php')
     .then(response => response.json()) // Assuming the PHP returns JSON data
     .then(data => {
@@ -258,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const alumniPromise = fetch('../php/alumnis.php')
     .then(response => response.json()) // Assuming the PHP returns JSON data
-    .then(data => {
+    .then( data => {
       updateAlumniData(data);
     })
     .catch(error => console.error('Error fetching alumni data:', error));
@@ -281,29 +308,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const commentPromise = fetch('../php/comment.php')
     .then(response => response.json()) // Assuming the PHP returns JSON data
     .then(data => {
-
       updateCommentData(data);
     })
 
     .catch(error => console.error('Error fetching comment data:', error));
-
+    
     Promise.all([userPromise, coursesPromise, alumniPromise, jobsPromise])
-    .then(() => updateDatabaseSource());
+      .then(() => updateDatabaseSource());
 
     Promise.all([coursesPromise, alumniPromise])
-    .then(() => alumniRestriction());
+      .then(() => alumniRestriction());
 
     Promise.all([jobsPromise, alumniPromise])
-    .then(() => jobApproval());
+      .then(() => jobApproval());
 
-    Promise.all([userPromise])
-    .then(() => accountRestriction());
-
-    Promise.all([forumPromise, commentPromise, alumniPromise])
-    .then(() => updateForumSource());
-
-    Promise.all([alumniPromise])
-    .then(() => topicCreateRestriction());
+    Promise.all([forumPromise, commentPromise, alumniPromise, adminPromise])
+      .then(() => updateForumSource());
+    
+    userPromise.then(() => accountRestriction());
+    
   }
 
   function updateDatabaseSource(){
@@ -312,134 +335,148 @@ document.addEventListener('DOMContentLoaded', function () {
     const coursesData = document.querySelector('#courseCount');
     const alumnisData = document.querySelector('#alumniCount');
     const jobsData = document.querySelector('#jobCount');
-    usersData.innerHTML = '';
-    coursesData.innerHTML = '';
-    alumnisData.innerHTML = '';
-    jobsData.innerHTML = '';
 
-    const userCountHTMLData = `
-    <h2>${userData.length}</h2>
-    `;
-    const courseCountHTMLData = `
-    <h2>${courseData.length}</h2>
-    `;
-    const alumniCountHTMLData = `
-    <h2>${alumniData.length}</h2>
-    `;
-    const jobCountHTMLData = `
-    <h2>${jobData.length}</h2>
-    `;
+    setInterval(() => {
+      usersData.innerHTML = '';
+      coursesData.innerHTML = '';
+      alumnisData.innerHTML = '';
+      jobsData.innerHTML = '';
 
-    usersData.insertAdjacentHTML('beforeend', userCountHTMLData);
-    coursesData.insertAdjacentHTML('beforeend', courseCountHTMLData);
-    alumnisData.insertAdjacentHTML('beforeend', alumniCountHTMLData);
-    jobsData.insertAdjacentHTML('beforeend', jobCountHTMLData);
+      const userCountHTMLData = `
+      <h2>${userData.length}</h2>
+      `;
+      const courseCountHTMLData = `
+      <h2>${courseData.length}</h2>
+      `;
+      const alumniCountHTMLData = `
+      <h2>${alumniData.length}</h2>
+      `;
+      const jobCountHTMLData = `
+      <h2>${jobData.length}</h2>
+      `; 
 
+      usersData.insertAdjacentHTML('beforeend', userCountHTMLData);
+      coursesData.insertAdjacentHTML('beforeend', courseCountHTMLData);
+      alumnisData.insertAdjacentHTML('beforeend', alumniCountHTMLData);
+      jobsData.insertAdjacentHTML('beforeend', jobCountHTMLData);
+    }, 500);
+    
  }
 
  function alumniRestriction(){
     const tableData = document.querySelector('.alumniTbody');
-    tableData.innerHTML = '';
-    let i = 1;
+    
+      tableData.innerHTML = '';
+      let i = 1;
 
-    alumniData.forEach( data => {
-      const alumniCourse = courseData.find(course => course.id === data.course);
-      var jobCreateStatus = `<button class="${data.jobc === '0' ? 'disable-btn' : 'active-btn'} jobCreateStatus" data-status="${data.jobc === '0' ? 1 : 0}" data-id="${data.id}">${data.jobc === '0' ? 'Disable' : 'Undisable'}</button>`;
-      var forumCreateStatus = `<button class="${data.forumc === '0' ? 'disable-btn' : 'active-btn'} forumCreateStatus" data-status="${data.forumc === '0' ? 1 : 0}" data-id="${data.id}">${data.forumc === '0' ? 'Disable' : 'Undisable'}</button>`;
-      var commentCreateStatus = `<button class="${data.commentc === '0' ? 'disable-btn' : 'active-btn'} commentCreateStatus" data-status="${data.commentc === '0' ? 1 : 0}" data-id="${data.id}">${data.commentc === '0' ? 'Disable' : 'Undisable'}</button>`;
-      const tableHTMLData = `
-      <tr>
-        <th scope="col" class="text-center">${i++}</th>
-        <td scope="col" class="text-center col-2">
-          <figure class="figure" style="margin: 0;">
-            <img src="${data.photo || 'image/image-placeholder.png'}" class="figure-img img-fluid rounded" style="height: 100px; margin: 0;">
-          </figure>
-          <p style="display: none">${data.lastname}</p>
-          <p style="display: none">${data.middlename}</p>
-          <p style="display: none">${data.firstname}</p>
-          <p style="display: none">${data.batch}</p>
-          <p style="display: none">${alumniCourse ? alumniCourse.course : 'Unknown'}</p>
-        </td>
-        <td>${data.student_number}</td>
-        <td class="text-center">${forumCreateStatus}</td>
-        <td class="text-center">${jobCreateStatus}</td>
-        <td class="text-center">${commentCreateStatus}</td>
-      </tr>
-      `;
-      tableData.insertAdjacentHTML('beforeend', tableHTMLData);
-    });
-    $('#alumniTable').DataTable();
-    $(document).ready( function() {
-      $('.jobCreateStatus').click( function(event) {
-        console.log('Job Restriction Button Click. ID:',event.target.getAttribute('data-id'));
-        $.ajax({
-          type: 'POST',
-          url: 'function/action.php?action=alumniJobRestriction',
-          data: {
-            id: event.target.getAttribute('data-id'),
-            status: event.target.getAttribute('data-status')
-          },
-          error: err => {
-                console.log('Error: ', err);
-          },
-          success: function(data) {
-            console.log('Success data Recieve');
-            if(data.error){  
-              console.log(data.error);
-            }else{
-              console.log(data);
-              
+      alumniData.forEach( data => {
+        const alumniCourse = courseData.find(course => course.id === data.course);
+        var jobCreateStatus = `<button class="${data.jobc === '0' ? 'disable-btn' : 'active-btn'} jobCreateStatus" data-status="${data.jobc === '0' ? 1 : 0}" data-id="${data.id}">${data.jobc === '0' ? 'Disable' : 'Undisable'}</button>`;
+        var forumCreateStatus = `<button class="${data.forumc === '0' ? 'disable-btn' : 'active-btn'} forumCreateStatus" data-status="${data.forumc === '0' ? 1 : 0}" data-id="${data.id}">${data.forumc === '0' ? 'Disable' : 'Undisable'}</button>`;
+        var commentCreateStatus = `<button class="${data.commentc === '0' ? 'disable-btn' : 'active-btn'} commentCreateStatus" data-status="${data.commentc === '0' ? 1 : 0}" data-id="${data.id}">${data.commentc === '0' ? 'Disable' : 'Undisable'}</button>`;
+        const tableHTMLData = `
+        <tr>
+          <th scope="col" class="text-center">${i++}</th>
+          <td scope="col" class="text-center col-2">
+            <figure class="figure" style="margin: 0;">
+              <img src="${data.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png'}" class="figure-img img-fluid rounded" style="height: 100px; margin: 0;">
+            </figure>
+            <p style="display: none">${data.lastname}</p>
+            <p style="display: none">${data.middlename}</p>
+            <p style="display: none">${data.firstname}</p>
+            <p style="display: none">${data.batch}</p>
+            <p style="display: none">${alumniCourse ? alumniCourse.course : 'Unknown'}</p>
+          </td>
+          <td>${data.student_number}</td>
+          <td class="text-center">${forumCreateStatus}</td>
+          <td class="text-center">${jobCreateStatus}</td>
+          <td class="text-center">${commentCreateStatus}</td>
+        </tr>
+        `;
+        tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+      });
+      $('#alumniTable').DataTable();
+      $(document).ready( function() {
+        $('.jobCreateStatus').click( function(event) {
+          console.log('Job Restriction Button Click. ID:',event.target.getAttribute('data-id'));
+          $.ajax({
+            type: 'POST',
+            url: 'function/action.php?action=alumniJobRestriction',
+            data: {
+              id: event.target.getAttribute('data-id'),
+              status: event.target.getAttribute('data-status')
+            },
+            error: err => {
+                  console.log('Error: ', err);
+            },
+            success: function(data) {
+              console.log('Success data Recieve');
+              if(data.error){
+                console.log(data.error);
+                showMessage('error',data.error);
+              }else{
+                showMessage('success',data);
+                setInterval(() => {
+                  location.reload();
+                }, 5000);
+              }
             }
-          }
+          })
+        })
+        $('.forumCreateStatus').click( function(event) {
+          console.log('Forum Restriction Button Click. ID:',event.target.getAttribute('data-id'));
+          $.ajax({
+            type: 'POST',
+            url: 'function/action.php?action=alumniForumRestriction',
+            data: {
+              id: event.target.getAttribute('data-id'),
+              status: event.target.getAttribute('data-status')
+            },
+            error: err => {
+                  console.log('Error: ', err);
+            },
+            success: function(data) {
+              console.log('Success data Recieve');
+              if(data.error){
+                console.log(data.error);
+                showMessage('error',data.error);
+              }else{
+                showMessage('success',data);
+                setInterval(() => {
+                  location.reload();
+                }, 5000);
+              }
+            }
+          })
+        })
+        $('.commentCreateStatus').click( function(event) {
+          console.log('Comment Restriction Button Click. ID:',event.target.getAttribute('data-id'));
+          $.ajax({
+            type: 'POST',
+            url: 'function/action.php?action=alumniCommentRestriction',
+            data: {
+              id: event.target.getAttribute('data-id'),
+              status: event.target.getAttribute('data-status')
+            },
+            error: err => {
+                  console.log('Error: ', err);
+            },
+            success: function(data) {
+              console.log('Success data Recieve');
+              if(data.error){
+                console.log(data.error);
+                showMessage('error',data.error);
+              }else{
+                showMessage('success',data);
+                setInterval(() => {
+                  location.reload();
+                }, 5000);
+              }
+            }
+          })
         })
       })
-      $('.forumCreateStatus').click( function(event) {
-        console.log('Forum Restriction Button Click. ID:',event.target.getAttribute('data-id'));
-        $.ajax({
-          type: 'POST',
-          url: 'function/action.php?action=alumniForumRestriction',
-          data: {
-            id: event.target.getAttribute('data-id'),
-            status: event.target.getAttribute('data-status')
-          },
-          error: err => {
-                console.log('Error: ', err);
-          },
-          success: function(data) {
-            console.log('Success data Recieve');
-            if(data.error){  
-              console.log(data.error);
-            }else{
-              console.log(data);
-              
-            }
-          }
-        })
-      })
-      $('.commentCreateStatus').click( function(event) {
-        console.log('Comment Restriction Button Click. ID:',event.target.getAttribute('data-id'));
-        $.ajax({
-          type: 'POST',
-          url: 'function/action.php?action=alumniCommentRestriction',
-          data: {
-            id: event.target.getAttribute('data-id'),
-            status: event.target.getAttribute('data-status')
-          },
-          error: err => {
-                console.log('Error: ', err);
-          },
-          success: function(data) {
-            console.log('Success data Recieve');
-            if(data.error){  
-              console.log(data.error);
-            }else{
-              console.log(data);
-              
-            }
-          }
-        })
-      })
-    })
+    
  }
 
  function jobApproval(){
@@ -484,11 +521,14 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           success: function(data) {
             console.log('Success data Recieve');
-            if(data.error){  
+            if(data.error){
               console.log(data.error);
+              showMessage('error',data.error);
             }else{
-              console.log(data);
-              
+              showMessage('success',data);
+              setInterval(() => {
+                location.reload();
+              }, 5000);
             }
           }
         })
@@ -500,17 +540,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableData = document.querySelector('.userTbody');
     tableData.innerHTML = '';
     let i = 1;
+    let user = JSON.parse(sessionStorage.user || null);
 
     userData.forEach( data => {
       var accountStatus = `<button class="${data.status === '0' ? 'pending-btn' : 'active-btn'} accountStatus" data-status="${data.status === '0' ? 1 : 0}" data-id="${data.id}">${data.status === '0' ? 'Deactive' : 'Active'}</button>`;
-      const tableHTMLData = `
-      <tr>
-        <th scope="col" class="text-center">${i++}</th>
-        <td scope="col">${data.displayName}</td>
-        <td scope="col" class="text-center">${accountStatus}</td>
-      </tr>
-      `;
-      tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+      if(data.displayName !== user.displayName){
+        const tableHTMLData = `
+          <tr>
+            <th scope="col" class="text-center">${i++}</th>
+            <td scope="col">${data.displayName}</td>
+            <td scope="col" class="text-center">${accountStatus}</td>
+          </tr>
+          `;
+        tableData.insertAdjacentHTML('beforeend', tableHTMLData);
+      }
+      
     })
     $('#usersTable').DataTable();
     $(document).ready( function() {
@@ -528,19 +572,24 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           success: function(data) {
             console.log('Success data Recieve');
-            if(data.error){  
+            if(data.error){
               console.log(data.error);
+              showMessage('error',data.error);
             }else{
-              console.log(data);
-              
+              showMessage('success',data);
+              setInterval(() => {
+                location.reload();
+              }, 5000);
             }
           }
         })
       })
     })
+    
  }
 
  function updateForumSource(){
+  
       let user = JSON.parse(sessionStorage.user || null);
       const usersData = alumniData.find(alumni => alumni.id === user.id);
       const forumTbody = document.querySelector('.forumTbody');
@@ -577,17 +626,16 @@ document.addEventListener('DOMContentLoaded', function () {
           
           $('#post').append(backHtml);
 
-          if(forumData.some(forum => forum.id === topicId)){
-            viewForumSource(forumData);
+          const fData = forumData.find(forum => forum.id === topicId);
+
+          if(fData){
+            viewForumSource(fData);
           }else{
             console.log(`Error Forum Message: Forum ID no. ${topicId} Data Not Found`);
           }
 
-          if(commentData.some(comment => comment.forumId === topicId)){
-            viewCommentSource(commentData);
-          }else{
-            console.log(`Error Comment Message: Forum ID no. ${topicId} Data Not Found`);
-          }
+          viewCommentSource(topicId);
+
           $('#backForum').click(function(){
             $('#main').show();
             $('#post').html('');
@@ -616,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                   $.ajax({
                     type: 'POST',
-                    url: 'php/action.php?action=Comments',
+                    url: 'function/action.php?action=Comments',
                     data: new FormData(this),
                     datatype: 'json',
                     contentType: false,
@@ -628,8 +676,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     success: function(data) {
                       if(data.error){
                         console.log(data.error);
+                        showMessage('error',data.error);
                       }else{
-                        console.log(data);
+                        showMessage('success',data);
+                        setInterval(() => {
+                          location.reload();
+                        }, 5000);
                       }
                     }
                   });
@@ -638,18 +690,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
       });
-    }
+ }
 
-    function viewForumSource(data) {
+ function viewForumSource(data) {
         
-      data.forEach(fData => {
+    let image = '';
+        if(data.img!==null){
+          image = `<img src="${data.img}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">`;
+        }
+
         const viewBodyHTMLData = `
         <div class="mb-3">
-          <h2><i class="fa fa-book"></i>${fData.topic}</h2>
-          <p>By ${fData.created} | Posted Date ${fData.timestamp}</p>
+          <h2><i class="fa fa-book"></i>${data.topic}</h2>
+          <p>By ${data.created} | Posted Date ${data.timestamp}</p>
           <div class="card" style="padding: .5rem;">
-            <img src="${fData.img || '../image/image-placeholder.png'}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">
-            <p>${fData.content}</p>
+            ${image}
+            <p>${data.content}</p>
           </div>
         </div>
         <div class="mb-3" id="commentsContent">
@@ -657,74 +713,116 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         `;
         $('#post').append(viewBodyHTMLData);
-
-      });
        
-    }
+ }
 
-    function viewCommentSource(data){
+ function viewCommentSource(data){
+    const comment = commentData.filter(comment => comment.forumId === data);
 
-      data.forEach(cData => {
-        const commentAlumni = alumniData.find(alumni => alumni.id === cData.studentId);
-        const viewCommentHTMLData = `
-        <div class="row">
-          <div class="col-1">
-            <figure class="figure">
-              <img src="${commentAlumni.photo || 'https://www.freeiconspng.com/uploads/--tie-user-users-work-worker-working-icon--icon-search-engine-6.png'}" class="figure-img img-fluid rounded">
-              <figcaption class="figure-caption text-center">${commentAlumni.firstname || ''}</figcaption>
-            </figure>
-          </div>
-          <div class="col-11">
-            <div class="card" style="padding: .5rem;">
-              <p>${cData.comments}</p>
-            </div>
-            <p class="text-end ptag">Posted Date: ${cData.timestamp}</p>
-          </div>
+    comment.forEach(cData => {
+      let comments = '';
+
+      if(cData.studentId!==null){
+        comments = alumniData.find(alumni => alumni.id === cData.studentId);
+      }else{
+        comments = adminData.find(admin => admin.id === cData.adminId);
+      }
+
+      const viewCommentHTMLData = `
+      <div class="row">
+        <div class="col-1">
+          <figure class="figure">
+            <img src="${comments.photo || 'https://www.freeiconspng.com/uploads/--tie-user-users-work-worker-working-icon--icon-search-engine-6.png'}" class="figure-img img-fluid rounded">
+            <figcaption class="figure-caption text-center">${comments.firstname || ''}</figcaption>
+          </figure>
         </div>
-        `;
-        $('#commentsContent').append(viewCommentHTMLData);
-      })
-    }
+        <div class="col-11">
+          <div class="card" style="padding: .5rem;">
+            <p>${cData.comments}</p>
+          </div>
+          <p class="text-end ptag">Posted Date: ${cData.timestamp}</p>
+        </div>
+      </div>
+      `;
+      $('#commentsContent').append(viewCommentHTMLData);
+    })
+ }
 
-    function topicCreateRestriction(){
+ function topicCreateRestriction(){
       let user = JSON.parse(sessionStorage.user || null);
       const createTopic = document.querySelector('#createTopic');
       createTopic.innerHTML = '';
     
           const createTopicHTMLData = `
-              <form id="createPost" class="card" enctype="multipart/form-data" style="padding: 1rem; margin: 1rem 0rem;">
-                <input type="hidden" name="id" value="${user.id}">
-                <div class="row g-3">
-                  <div class="col-7">
-                    <div class="mb-3">
-                      <input type="text" name="topic" id="topicId" class="form-control" placeholder="Topic Title">
+                <form id="createPost" class="card" enctype="multipart/form-data" style="padding: 1rem; margin: 1rem 0rem;">
+                  <input type="hidden" name="created" value="${user.firstname}">
+                  <div class="row g-3">
+                    <div class="col-8">
+                      <div class="mb-3">
+                        <input type="text" name="topic" id="topicId" class="form-control" placeholder="Topic Title">
+                      </div>
+                      <div class="mb-3">
+                        <textarea class="form-control" rows="5" name="content" id="contentId" placeholder="Topic Content"></textarea>
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <textarea class="form-control" rows="5" name="content" id="contentId" placeholder="Topic Content"></textarea>
+                    <div class="col-3">
+                      <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" class="rounded mx-auto d-block" style="width: 10rem;" id="imageHolder">
+                      <input type="file" class="form-control" name="image" accept="image/*" id="imagein">
+                    </div>
+                    <div class="col-sm">
+                      <input type="submit" class="btn btn-primary" value="Create">
                     </div>
                   </div>
-                  <div class="col-3">
-                    <img src="../image/image-placeholder.png" class="rounded mx-auto d-block" style="width: 10rem;" id="dpl">
-                    <input type="file" class="form-control" name="file1" accept="image/*" id="postImg">
-                  </div>
-                  <div class="col-sm">
-                    <input type="submit" class="btn btn-primary" value="Create">
-                  </div>
-                </div>
-              </form>
-          `;
+                </form>
+            `;
         createTopic.insertAdjacentHTML('beforeend', createTopicHTMLData);
-        $('#postImg').on('change', function(event) {
+        $('#imagein').on('change', function(event) {
           const file = event.target.files[0];
           if (file) {
-            $('#dpl').attr('src', URL.createObjectURL(file))
+            $('#imageHolder').attr('src', URL.createObjectURL(file))
           }
         })
-    }
+        $(document).ready(function(e) {
+              $('#createPost').on('submit', function(e) {
+                e.preventDefault();
+                console.log('ready to create post.');
 
-  setInterval(() => {
+                const topic = document.getElementById('topicId');
+                const content = document.getElementById('contentId');
+
+                  if(!topic.value.length || !content.value.length){
+                    console.log('No Details Input');
+                  }else{
+                    $.ajax({
+                      type: 'POST',
+                      url: 'function/action.php?action=Forum',
+                      data: new FormData(this),
+                      datatype: 'json',
+                      contentType: false,
+                      cache: false,
+                      processData: false,
+                      error: function(err) {
+                        console.log('error: ', err);
+                      },
+                      success: function(data) {
+                        if(data.error){
+                          console.log(data.error);
+                          showMessage('error',data.error);
+                        }else{
+                          showMessage('success',data);
+                          setInterval(() => {
+                            location.reload();
+                          }, 5000);
+                        }
+                      }
+                    });
+                  }
+              })
+            })
+   }
+
     fetchData();
-  }, 500);
 
+    topicCreateRestriction();
 })
 </script>

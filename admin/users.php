@@ -12,7 +12,7 @@
                                   <th scope="col">Display name</th>
                                   <th scope="col">Email</th>
                                   <th scope="col">Mobile</th>
-                                  <th scope="col">Status</th>
+                                  <th scope="col" class="text-center">Account Type</th>
                                   <th scope="col">Activity</th>
                                 </tr>
                               </thead>
@@ -32,10 +32,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // Push each fetched event to the userData array
     data.forEach(system => {
       userData.push({
+        id: system.id,
         displayName: system.displayName,
         email: system.email,
         contact: system.contact,
-        status: system.status
+        status: system.status,
+        type: system.type
       });
     });
   
@@ -61,29 +63,92 @@ document.addEventListener('DOMContentLoaded', function () {
     let i = 1;
 
     userData.forEach( data => {
+
+     let accountType = '';
+      if(data.type === '0'){
+        accountType = `<button class="active-btn btn-type" data-type="2" data-id="${data.id}">Admin</button>`;
+      }else if(data.type === '2'){
+        accountType = `<button class="pending-btn btn-type" data-type="0" data-id="${data.id}">Sub-Admin</button>`;
+      }else{
+        accountType = `<div class="student">Student</div>`;
+      }
+
       const userHTMLData = `
       <tr>
         <th scope="row">${i++}</th>
         <td>${data.displayName}</td>
         <td>${data.email}</td>
         <td>${data.contact}</td>
-        <td>${data.status}</td>
+        <td class="text-center">${accountType}</td>
         <td>
-          <button class="btn btn-danger" role="button">Delete</button>
+          <button class="btn btn-danger delete" data-id="${data.id}" data-type="${data.type}" role="button">Delete</button>
         </td>
       </tr>
       `;
       tbody.insertAdjacentHTML('beforeend', userHTMLData);
     })
-    
+    document.querySelectorAll('.delete').forEach(element => {
+      element.addEventListener('click', function () {
+        
+        $.ajax({
+        type: 'POST',
+        url: 'function/action.php?action=DeleteUser',
+        data: {
+          id: this.getAttribute('data-id'),
+          type: this.getAttribute('data-type')
+        },
+        error: function(err) {
+          console.log('error: ', err)
+        },
+        success: function(data) {
+          if(data.error){
+            console.log(data.error);
+            showMessage('error',data.error);
+          }else{
+            showMessage('success',data);
+            setInterval(() => {
+              location.reload();
+            }, 5000);
+          }
+        }
+        })
+      
+      });
+    });
+    $(document).ready( function() {
+      $('.btn-type').click( function(event) {
+        console.log('Account Status Button Click. ID:',event.target.getAttribute('data-id'));
+        $.ajax({
+          type: 'POST',
+          url: 'function/action.php?action=changeType',
+          data: {
+            id: event.target.getAttribute('data-id'),
+            type: event.target.getAttribute('data-type')
+          },
+          error: err => {
+                console.log('Error: ', err);
+          },
+          success: function(data) {
+            console.log('Success data Recieve');
+            if(data.error){
+              console.log(data.error);
+              showMessage('error',data.error);
+            }else{
+              showMessage('success',data);
+              setInterval(() => {
+                location.reload();
+              }, 5000);
+            }
+          }
+        })
+      })
+    })
   }
 
   let table = new DataTable('#userTable', {
     responsive: true
   });
-  setInterval(() => {
     fetchuserData();
-  }, 500);
 
 })
 </script>

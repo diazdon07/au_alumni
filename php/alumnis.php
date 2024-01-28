@@ -26,7 +26,10 @@ if ($result->num_rows > 0) {
             'photo' => $photo,
             'jobC' => $row['job_create'],
             'forumC' => $row['forum_create'],
-            'commentC' => $row['comment_create']
+            'commentC' => $row['comment_create'],
+            'status' => $row['employment_status'],
+            'position' => $row['position'],
+            'company' => $row['company']
         );
     }
 }

@@ -162,9 +162,13 @@ $(document).ready(function(e) {
       },
       success: function(data) {
         if(data.error){
-          console.log(data.error)
+          console.log(data.error);
+          showMessage('error',data.error);
         }else{
-          
+          showMessage('success',data);
+          setInterval(() => {
+            location.reload();
+          }, 5000);
         }
       }
     })
@@ -244,9 +248,12 @@ function updateSource(){
         success: function(data) {
           if(data.error){
             console.log(data.error);
+            showMessage('error',data.error);
           }else{
-            console.log(data);
-            
+            showMessage('success',data);
+            setInterval(() => {
+              location.reload();
+            }, 5000);
           }
         }
         })
@@ -254,9 +261,7 @@ function updateSource(){
     });
 
 }
-setInterval(() => {
   fetchData()
-}, 500);
 
 })
                 </script>

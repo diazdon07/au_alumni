@@ -55,13 +55,19 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
   modalForm.innerHTML = '';
 
   if(recipient === 'View'){
+    let image = '';
+
+    if(button.getAttribute('data-image')!=='null'){
+      image = `<img src="${button.getAttribute('data-image')}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">`;
+    }
+    
     const bodyHTMLData = `
     <div class="modal-body">
       <div class="mb-3">
         <h2><i class="fa fa-book"></i>${button.getAttribute('data-topic')}</h2>
         <p>By ${button.getAttribute('data-created')} | Posted Date ${button.getAttribute('data-timestamp')}</p>
         <div class="card" style="padding: .5rem;">
-          <img src="${button.getAttribute('data-image') !== 'null' ? button.getAttribute('data-image') : '../image/image-placeholder.png'}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">
+          ${image}
           <p>${button.getAttribute('data-content')}</p>
         </div>
       </div>
@@ -79,7 +85,7 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
         <input type="text" class="form-control" name="topic" placeholder="Topic">
       </div>
       <div class="mb-3 text-center">
-        <img src="../image/image-placeholder.png" alt="image" width="300" class="rounded img-thumbnail" id="images">
+        <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="300" class="rounded img-thumbnail" id="images">
       </div>
       <div class="mb-3">
         <input type="file" class="form-control" accept="image/*" id="imagein" name="image">
@@ -124,9 +130,13 @@ $(document).ready(function(e) {
       },
       success: function(data) {
         if(data.error){
-          console.log(data.error)
+          console.log(data.error);
+          showMessage('error',data.error);
         }else{
-          
+          showMessage('success',data);
+          setInterval(() => {
+            location.reload();
+          }, 5000);
         }
       }
     })
@@ -206,7 +216,7 @@ function updateSource(){
         <td>
           <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalt" data-bs-whatever="View" data-id="${data.id}"
           data-topic="${data.topic}" data-created="${data.created}" data-timestamp="${data.timestamp}" data-content="${data.content}" data-image="${data.img}">View</button>
-          <button class="btn btn-danger" role="button">Delete</button>
+          <button class="btn btn-danger delete" data-id="${data.id}" role="button">Delete</button>
         </td>
       </tr>
       `;
@@ -215,10 +225,36 @@ function updateSource(){
     $(document).ready( function() {
       $('#Table').DataTable();
     });
+    document.querySelectorAll('.delete').forEach(element => {
+      element.addEventListener('click', function () {
+        const topicId = this.getAttribute('data-id');
+
+        $.ajax({
+        type: 'POST',
+        url: 'function/action.php?action=DeleteForum',
+        data: {
+          id: topicId
+        },
+        error: function(err) {
+          console.log('error: ', err)
+        },
+        success: function(data) {
+          if(data.error){
+            console.log(data.error);
+            showMessage('error',data.error);
+          }else{
+            showMessage('success',data);
+            setInterval(() => {
+              location.reload();
+            }, 5000);
+          }
+        }
+        })
+      
+      });
+    });
 }
-setInterval(() => {
   fetchData();
-}, 500);
 
 })
                 </script>

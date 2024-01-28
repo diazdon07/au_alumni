@@ -49,64 +49,80 @@ if(isset($_GET['action'])){
     // save and update system
     if($action === 'System'){
 
-        if($_FILES['logo'] === null ){
-            $imgData1 = '';
-            $imgType1 = '';
-            $imgSet1 = '';
-            $ss1 = '';
-        }else{
-            if(isset($_FILES['logo'])&&is_uploaded_file($_FILES['logo']['tmp_name'])){
-                $imgData1 = file_get_contents($_FILES['logo']['tmp_name']);
-                $imgType1 = $_FILES['logo']['type'];
-                $imgSet1 = 'logoData = ?, logoType = ?,';
-                $ss1 = 'ss';
+      $values = array();
+      $dataType = "ssss";
+      $ss1 = "";
+      $ss2 = "";
+      $update1 = "";
+      $update2 = "";
+      $imgIns1 = "";
+      $imgIns1 = "";
+      $imgSet1 = "";
+      $imgSet2 = "";
 
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!in_array($imgType1, $allowedTypes)) {
-                    echo json_encode(array('error' => 'Invalid file1 type.'));
-                    exit;
-                }
-            }
+      $values['systemName'] = $systemName;
+      $values['email'] = $email;
+      $values['contact'] = $contact;
+      $values['aboutcontent'] = $aboutContent;
+        
+      if(isset($_FILES['logo'])&&is_uploaded_file($_FILES['logo']['tmp_name'])){
+        $imgData1 = file_get_contents($_FILES['logo']['tmp_name']);
+        $imgType1 = $_FILES['logo']['type'];
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+          if (!in_array($imgType1, $allowedTypes)) {
+            echo json_encode(array('error' => 'Invalid file1 type.'));
+            exit;
         }
 
-        if($_FILES['aboutImage'] === null ){
-            $imgData2 = '';
-            $imgType2 = '';
-            $imgSet2 = '';
-            $ss2 = '';
-        }else{
-            if(isset($_FILES['aboutImage'])&&is_uploaded_file($_FILES['aboutImage']['tmp_name'])){
-                $imgData2 = file_get_contents($_FILES['aboutImage']['tmp_name']);
-                $imgType2 = $_FILES['aboutImage']['type'];
-                $imgSet2 = 'aboutData = ?, aboutType = ?,';
-                $ss2 = 'ss';
+        $imgSet1 = ',logoData = ?, logoType = ?';
+        $imgIns1 = ',logoData ,logoType';
+        $values['logoData'] = $imgData1;
+        $values['logoType'] = $imgType1;
+        $ss1 = "ss";
+        $update1 = ",?,?";
+      }
 
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!in_array($imgType2, $allowedTypes)) {
-                    echo json_encode(array('error' => 'Invalid file2 type.'));
-                    exit;
-                }
-            }
+      if(isset($_FILES['aboutImage'])&&is_uploaded_file($_FILES['aboutImage']['tmp_name'])){
+        $imgData2 = file_get_contents($_FILES['aboutImage']['tmp_name']);
+        $imgType2 = $_FILES['aboutImage']['type'];
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($imgType2, $allowedTypes)) {
+          echo json_encode(array('error' => 'Invalid file2 type.'));
+          exit;
         }
-            $result = mysqli_query($conn,'SELECT * FROM `system`');
-            if(mysqli_num_rows($result) > 0){
-                $stmt = $conn->prepare('UPDATE `system` SET systemname = ?, email = ?, contact = ?, '.$imgSet1.$imgSet2.' aboutcontent = ? WHERE id = ?');
-                $stmt->bind_param('ssss'.$ss2.$ss1.'i', $systemName, $email, $contact, $imgData1, $imgType1, $imgData2, $imgType2, $aboutContent, $id);
-            }else{
-                $stmt = $conn->prepare('INSERT INTO `system` (systemname, email, contact, '.$imgSet1.$imgSet2.' aboutcontent) VALUES (?,?,?,?,?,?)');
-                $stmt->bind_param('sss'.$ss2.$ss1.'s', $systemName, $email, $contact, $imgData1, $imgType1, $imgData2, $imgType2, $aboutContent);
-            }
 
-            if($stmt->execute()){
-                echo json_encode('System settings successfully save.');
-            }else{
-                echo json_encode(array('error' => 'System settings failed to save.'));
-            }
-            mysqli_stmt_close($stmt);
+        $imgSet2 = ',aboutData = ?, aboutType = ?';
+        $imgIns2 = ',aboutData ,aboutType';
+        $values['aboutData'] = $imgData2;
+        $values['aboutType'] = $imgType2;
+        $ss2 = "ss";
+        $update2 = ",?,?";
+      }
+        
+      $result = mysqli_query($conn,'SELECT * FROM `system`');
+      
+        if(mysqli_num_rows($result) > 0){
+          $values['id'] = $id;
+          $stmt = $conn->prepare('UPDATE `system` SET systemname = ?, email = ?, contact = ?, aboutcontent = ? '.$imgSet1.$imgSet2.'  WHERE id = ?');
+          $stmt->bind_param($dataType.$ss1.$ss2.'i', ...array_values($values));
+        }else{
+          $stmt = $conn->prepare('INSERT INTO `system` (systemname, email, contact, aboutcontent '.$imgIns1.$imgIns2.' ) VALUES (?,?,?,?'.$update1.$update2.')');
+          $stmt->bind_param($dataType.$ss1.$ss2, ...array_values($values));
+        }
+
+        if($stmt->execute()){
+          echo json_encode('System settings successfully save.');
+        }else{
+          echo json_encode(array('error' => 'System settings failed to save.'));
+        }
+        mysqli_stmt_close($stmt);
     }
 
     // add event
     if($action === 'AddEvent'){
+
         if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
@@ -116,7 +132,6 @@ if(isset($_GET['action'])){
                 echo json_encode(array('error' => 'Invalid file type.'));
                 exit;
             }
-
             $stmt = $conn->prepare('INSERT INTO `events` (title, imgData, imgType, schedule, timestart, timeend, location, description) VALUES (?,?,?,?,?,?,?,?)');
             $stmt->bind_param('ssssssss', $title, $imgData, $imgType, $schedule, $timeStart, $timeEnd, $location, $description);
 
@@ -127,50 +142,54 @@ if(isset($_GET['action'])){
             }
             mysqli_stmt_close($stmt);
         }
+
+        
     }
 
     // edit event
     if($action === 'EditEvent'){
-        if($_FILES['image'] === null ){
 
-            $stmt = $conn->prepare('UPDATE `events` SET title = ?, schedule = ?, timestart = ?, timeend = ?, location = ?, description = ? WHERE id = ?');
-            $stmt->bind_param('ssssssi', $title, $schedule, $timeStart, $timeEnd, $location, $description, $id);
+        $imgSet = "";
+        $imgDataType = "";
 
-            if($stmt){
-                if($stmt->execute()){
-                    echo json_encode('Event successfully save.');
-                }else{
-                    echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
-                }
-                mysqli_stmt_close($stmt);
+        $values = array();
+        $values['title'] = $title;
+        $values['schedule'] = $schedule;
+        $values['timeStart'] = $timeStart;
+        $values['timeEnd'] = $timeEnd;
+        $values['location'] = $location;
+        $values['description'] = $description;
+        $dataType = "ssssss";
+
+        if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
+            $imgData = file_get_contents($_FILES['image']['tmp_name']);
+            $imgType = $_FILES['image']['type'];
+
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($imgType, $allowedTypes)) {
+                echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            }
+            $imgSet = ', imgData = ?, imgType = ?';
+            $values['aboutData'] = $imgData;
+            $values['aboutType'] = $imgType;
+            $imgDataType = "ss";
+        }
+
+        $values['id'] = $id;
+
+        $stmt = $conn->prepare('UPDATE `events` SET title = ?, schedule = ?, timestart = ?, timeend = ?, location = ?, description = ? '.$imgSet.' WHERE id = ?');
+        $stmt->bind_param($dataType.$imgDataType.'i', ...array_values($values));
+
+        if($stmt){
+            if($stmt->execute()){
+                echo json_encode('Event successfully save.');
             }else{
-                echo json_encode(array('error' => 'Database error: ' . $conn->error));
+                echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
             }
+            mysqli_stmt_close($stmt);
         }else{
-            if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
-                $imgData = file_get_contents($_FILES['image']['tmp_name']);
-                $imgType = $_FILES['image']['type'];
-
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!in_array($imgType, $allowedTypes)) {
-                    echo json_encode(array('error' => 'Invalid file type.'));
-                    exit;
-                }
-
-                $stmt = $conn->prepare('UPDATE `events` SET title = ?, imgData = ?, imgType = ?, schedule = ?, timestart = ?, timeend = ?, location = ?, description = ? WHERE id = ?');
-                $stmt->bind_param('ssssssssi', $title, $imgData, $imgType, $schedule, $timeStart, $timeEnd, $location, $description, $id);
-
-                if($stmt){
-                    if($stmt->execute()){
-                        echo json_encode('Event successfully save.');
-                    }else{
-                        echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
-                    }
-                    mysqli_stmt_close($stmt);
-                }else{
-                    echo json_encode(array('error' => 'Database error: ' . $conn->error));
-                }
-            }
+            echo json_encode(array('error' => 'Database error: ' . $conn->error));
         }
     }
     
@@ -204,46 +223,43 @@ if(isset($_GET['action'])){
 
     // edit gallery
     if($action === 'EditGallery'){
-        if($_FILES['image'] !== null){
 
-            $stmt = $conn->prepare('UPDATE `gallery` SET title = ?, description = ? WHERE id = ?');
-            $stmt->bind_param('ssi', $title, $description, $id);
+        $imgSet = "";
+        $imgDataType = "";
 
-            if($stmt){
-                if($stmt->execute()){
-                    echo json_encode('Gallery successfully save.');
-                }else{
-                    echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
-                }
-                mysqli_stmt_close($stmt);
+        $values = array();
+        $values['title'] = $title;
+        $values['description'] = $description;
+        $dataType = "ss";
+
+        if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
+            $imgData = file_get_contents($_FILES['image']['tmp_name']);
+            $imgType = $_FILES['image']['type'];
+
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($imgType, $allowedTypes)) {
+                echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            }
+            $imgSet = ', imgData = ?, imgType = ?';
+            $values['aboutData'] = $imgData;
+            $values['aboutType'] = $imgType;
+        }
+
+        $values['id'] = $id;
+        
+        $stmt = $conn->prepare('UPDATE `gallery` SET title = ?, description = ?'.$imgSet.' WHERE id = ?');
+        $stmt->bind_param($dataType.$imgDataType.'i', ...array_values($values));
+
+        if($stmt){
+            if($stmt->execute()){
+                echo json_encode('Gallery successfully save.');
             }else{
-                echo json_encode(array('error' => 'Database error: ' . $conn->error));
+                echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
             }
+            mysqli_stmt_close($stmt);
         }else{
-            if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
-                $imgData = file_get_contents($_FILES['image']['tmp_name']);
-                $imgType = $_FILES['image']['type'];
-
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!in_array($imgType, $allowedTypes)) {
-                    echo json_encode(array('error' => 'Invalid file type.'));
-                    exit;
-                }
-
-                $stmt = $conn->prepare('UPDATE `gallery` SET title = ?, imgData = ?, imgType = ?, description = ? WHERE id = ?');
-                $stmt->bind_param('ssssi', $title, $imgData, $imgType, $description, $id);
-
-                if($stmt){
-                    if($stmt->execute()){
-                        echo json_encode('Gallery successfully save.');
-                    }else{
-                        echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
-                    }
-                    mysqli_stmt_close($stmt);
-                }else{
-                    echo json_encode(array('error' => 'Database error: ' . $conn->error));
-                }
-            }
+            echo json_encode(array('error' => 'Database error: ' . $conn->error));
         }
     }
 
@@ -326,7 +342,7 @@ if(isset($_GET['action'])){
         mysqli_stmt_close($stmt);
     }
 
-   //alumni Check
+    // alumni Check
     if($action === 'alumniCheck'){
         $stmt1 = $conn->prepare('SELECT * FROM `students` WHERE id = ?');
         $stmt1->bind_param('i', $id);
@@ -401,6 +417,17 @@ if(isset($_GET['action'])){
         $stmt->bind_param('ii', $status, $id);
         if($stmt->execute()){
             echo json_encode('Account status successfully change.');
+        }else{
+            echo json_encode(array('error' => 'Account Status failed to change.'));
+        }
+    }
+
+    // change Type
+    if($action === 'changeType'){
+        $stmt = $conn->prepare('UPDATE `user` SET type = ? WHERE id = ?');
+        $stmt->bind_param('ii', $type, $id);
+        if($stmt->execute()){
+            echo json_encode('Account type successfully change.');
         }else{
             echo json_encode(array('error' => 'Account Status failed to change.'));
         }
@@ -565,6 +592,111 @@ if(isset($_GET['action'])){
         }else{
             echo json_encode(array('error' => 'Job status failed to change.'));
         }
+    }
+
+    // Comments
+    if($action === 'Comments'){
+        $stmt = $conn->prepare('INSERT INTO `forum_comments` (forumId, comments, adminId) VALUES (?,?,?)');
+        $stmt->bind_param('sss', $topic, $comment, $id);
+        if($stmt->execute()){
+            echo json_encode('Comment posted.');
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    // Create Forum
+    if($action === 'Forum'){
+        $values = array();
+        $imgSet = "";
+        $dataType = "sss";
+        $stmQus = "?,?,?";
+        $values['topic'] = $topic;
+        $values['content'] = $content;
+        $values['created'] = $created;
+
+        if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+            $imgData = file_get_contents($_FILES['image']['tmp_name']);
+            $imgType = $_FILES['image']['type'];
+        
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($imgType, $allowedTypes)) {
+                echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            }
+            $imgSet = ",imgType, imgData";
+            $dataType = "sssss";
+            $stmQus = "?,?,?,?,?";
+            $values['imgType'] = $imgType;
+            $values['imgData'] = $imgData;
+        }
+
+        $stmt = $conn->prepare('INSERT INTO `forums` (topic, content, created '.$imgSet.') VALUES ('.$stmQus.')');
+        $stmt->bind_param($dataType, ...array_values($values));
+        if($stmt->execute()){
+            echo json_encode('Topic posted.');
+            mysqli_stmt_close($stmt);
+        }
+
+    }
+
+    // Delete Forum
+    if($action === 'DeleteForum'){
+        $stmt = $conn->prepare('DELETE FROM `forums` WHERE id = ?');
+        $stmt->bind_param('i', $id);
+        if($stmt){
+            if($stmt->execute()){
+                echo json_encode('Forum successfully deleted.');
+            }else{
+                echo json_encode(array('error' => 'Statement error: ' . $stmt->error));
+            }
+            mysqli_stmt_close($stmt);
+        }else{
+            echo json_encode(array('error' => 'Database error: ' . $conn->error));
+        }
+    }
+
+    // Delete User
+    if($action === 'DeleteUser'){
+        $stmtCheck = $conn->prepare('SELECT * FROM `user` WHERE id = ?');
+        $stmtCheck->bind_param('i', $id);
+        if($stmtCheck->execute()){
+            $result = $stmtCheck->get_result();
+            if($result->num_rows > 0){
+                $row = $result->fetch_assoc();
+                $uid = $row['uid'];
+
+                if($type === '1'){
+                    $sqlDelete = 'DELETE FROM `students` WHERE uid = ?';
+                }else{
+                    $sqlDelete = 'DELETE FROM `admins` WHERE uid = ?';
+                }
+
+                $stmtDelete = $conn->prepare($sqlDelete);
+                $stmtDelete->bind_param('s', $uid);
+                if($stmtDelete){
+                    if($stmtDelete->execute()){
+                        $stmtUser = $conn->prepare('DELETE FROM `user` WHERE uid = ?');
+                        $stmtUser->bind_param('s', $uid);
+                        if($stmtUser){
+                            if($stmtUser->execute()){
+                                echo json_encode('Account successfully deleted.');
+                            }else{
+                                echo json_encode(array('error' => 'Statement error: ' . $stmtUser->error));
+                            }
+                        }else{
+                            echo json_encode(array('error' => 'Database error: ' . $conn->error));
+                        }
+                    }else{
+                        echo json_encode(array('error' => 'Statement error: ' . $stmtDelete->error));
+                    }
+                }else{
+                    echo json_encode(array('error' => 'Database error: ' . $conn->error));
+                }
+            }
+        }
+        mysqli_stmt_close($stmtCheck);
+        mysqli_stmt_close($stmtDelete);
+        mysqli_stmt_close($stmtUser);
     }
 }
 mysqli_close($conn);

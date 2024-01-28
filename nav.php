@@ -20,7 +20,7 @@
       </ul>
     <div class="navbar container-{breakpoint}">
       <div class="d-none" id="profile">
-          <img src="image/user.png" alt="" class="profileImg" width="40rem" id="profileImage">
+          <img src="https://www.freeiconspng.com/uploads/profile-icon-9.png" alt="" class="profileImg" width="40rem" id="profileImage">
         <div class="btn-group" style="margin-right: 1rem; margin-left: 1rem;">
           <a class="nav-link dropdown-toggle text-white" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: larger;">
           </a>
@@ -75,7 +75,7 @@ function updateAlumniData(data) {
         commentc: alumni.commentC
       });
     });
-    topicCreateRestriction();
+    jobCreateRestriction();
   }
 
 function fetchData(){
@@ -86,7 +86,7 @@ function fetchData(){
   }).catch(error => console.error('Error fetching alumni data:', error));
 }
 
-function topicCreateRestriction(){
+function jobCreateRestriction(){
   let user = JSON.parse(sessionStorage.user || null);
   if(user != null){
     const userData = alumniData.find(alumni => alumni.id === user.id);
@@ -100,8 +100,6 @@ function topicCreateRestriction(){
         `;
         ilCreateJob.insertAdjacentHTML('beforeend', ilCreateJobHTMLData);
       }
-    }else {
-      console.log('User not found in alumniData');
     }
   }
   

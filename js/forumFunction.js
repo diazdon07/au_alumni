@@ -1,52 +1,43 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const forumData = [];
-    const commentData = [];
-    const alumniData = [];
-
     let user = JSON.parse(sessionStorage.user || null);
-
-    $('#postImg').on('change', function(event) {
-      const file = event.target.files[0];
-      if (file) {
-        $('#dpl').attr('src', URL.createObjectURL(file))
-      }
-    })
 
     if(user != null){
       const createdBy = document.getElementById('userS');
       const topicId = document.getElementById('topicId');
       const contentId = document.getElementById('contentId');
 
-      $(document).ready(function(e) {
-        $('#createPost').on('submit', function(e) {
-          e.preventDefault();
-          console.log('ready to create post.');
+      const forumData = [];
+      const commentData = [];
+      const alumniData = [];
+      const adminData = [];
 
-          
-            createdBy.value = user.firstname;
-            if(!topicId.value.length || !contentId.value.length){
-              console.log('No Details Input');
-            }else{
-              $.ajax({
-                type: 'POST',
-                url: 'php/action.php?action=Forum',
-                data: new FormData(this),
-                datatype: 'json',
-                contentType: false,
-                cache: false,
-                processData: false,
-                error: function(err) {
-                  console.log('error: ', err);
-                },
-                success: function(data) {
-                  console.log(data);
-                  location.reload();
-                }
-              });
-            }
-        })
-      })
+      const itemUser = document.querySelector('#items');
+          itemUser.innerHTML = '';
+  
+          const itemUserHTMLData = `
+            <li class="nav-item" role="presentation">
+              <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+              data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+              data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
+              data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-black" id="job-tab" data-bs-toggle="tab" 
+              data-bs-target="#job" type="button" role="tab" aria-controls="ob" aria-selected="false">Job List</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
+              data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
+            </li>
+          `;
+          itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
 
     function updateForumData(data) {
       
@@ -56,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
           forumData.push({
             id: forum.id,
             topic: forum.topic,
-            img: forum.img,
+            img: forum.photo,
             content: forum.content,
             created: forum.created,
             timestamp: forum.timestamp
@@ -88,6 +79,22 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    function updateAdminData(data) {
+    
+      adminData.length = 0; // Clear the existing eventData array
+        // Push each fetched event to the alumniData array
+      data.forEach(admin => {
+        adminData.push({
+          id: admin.id,
+          firstname: admin.firstname,
+          middlename: admin.middlename,
+          lastname: admin.lastname,
+          gender: admin.gender,
+          photo: admin.photo
+        });
+      });
+    }
+
     function updateCommentData(data) {
       
       commentData.length = 0; 
@@ -98,12 +105,19 @@ document.addEventListener('DOMContentLoaded', function () {
             forumId: comment.forumId,
             comments: comment.comments,
             studentId: comment.studentId,
+            adminId: comment.adminId,
             timestamp: comment.timestamp
           });
         });
     }
     
     function fetchData(){
+
+      const adminPromise = fetch('php/admins.php')
+      .then(response => response.json()) // Assuming the PHP returns JSON data
+      .then(data => {
+        updateAdminData(data);
+      })
 
       const alumniPromise = fetch('php/alumnis.php')
       .then(response => response.json()) // Assuming the PHP returns JSON data
@@ -128,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .catch(error => console.error('Error fetching comment data:', error));
 
-    Promise.all([forumPromise, commentPromise, alumniPromise])
+    Promise.all([forumPromise, commentPromise, alumniPromise, adminPromise])
     .then(() => updateForumSource());
 
     Promise.all([alumniPromise])
@@ -173,18 +187,16 @@ document.addEventListener('DOMContentLoaded', function () {
           `;
           
           $('#post').append(backHtml);
+          const fData = forumData.find(forum => forum.id === topicId);
 
-          if(forumData.some(forum => forum.id === topicId)){
-            viewForumSource(forumData);
+          if(fData){
+            viewForumSource(fData);
           }else{
             console.log(`Error Forum Message: Forum ID no. ${topicId} Data Not Found`);
           }
 
-          if(commentData.some(comment => comment.forumId === topicId)){
-            viewCommentSource(commentData);
-          }else{
-            console.log(`Error Comment Message: Forum ID no. ${topicId} Data Not Found`);
-          }
+          viewCommentSource(topicId);
+
           $('#backForum').click(function(){
             $('#main').show();
             $('#post').html('');
@@ -245,15 +257,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function viewForumSource(data) {
-        
-      data.forEach(fData => {
+      let image = '';
+        if(data.img!==null){
+          image = `<img src="${data.img}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">`;
+        }
+
         const viewBodyHTMLData = `
         <div class="mb-3">
-          <h2><i class="fa fa-book"></i>${fData.topic}</h2>
-          <p>By ${fData.created} | Posted Date ${fData.timestamp}</p>
+          <h2><i class="fa fa-book"></i>${data.topic}</h2>
+          <p>By ${data.created} | Posted Date ${data.timestamp}</p>
           <div class="card" style="padding: .5rem;">
-            <img src="image/${fData.img || 'image-placeholder.png'}" class="img-thumbnail rounded mx-auto d-block" style="width: 30rem;">
-            <p>${fData.content}</p>
+            ${image}
+            <p>${data.content}</p>
           </div>
         </div>
         <div class="mb-3" id="commentsContent">
@@ -261,21 +276,27 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         `;
         $('#post').append(viewBodyHTMLData);
-
-      });
        
     }
 
     function viewCommentSource(data){
+      const comment = commentData.filter(comment => comment.forumId === data);
 
-      data.forEach(cData => {
-        const commentAlumni = alumniData.find(alumni => alumni.id === cData.studentId);
+      comment.forEach(cData => {
+        let comments = '';
+
+        if(cData.studentId!==null){
+          comments = alumniData.find(alumni => alumni.id === cData.studentId);
+        }else{
+          comments = adminData.find(admin => admin.id === cData.adminId);
+        }
+       
         const viewCommentHTMLData = `
         <div class="row">
           <div class="col-1">
             <figure class="figure">
-              <img src="${commentAlumni.photo || 'https://www.freeiconspng.com/uploads/--tie-user-users-work-worker-working-icon--icon-search-engine-6.png'}" class="figure-img img-fluid rounded">
-              <figcaption class="figure-caption text-center">${commentAlumni.firstname || ''}</figcaption>
+              <img src="${comments.photo || 'https://www.freeiconspng.com/uploads/--tie-user-users-work-worker-working-icon--icon-search-engine-6.png'}" class="figure-img img-fluid rounded">
+              <figcaption class="figure-caption text-center">${comments.firstname || ''}</figcaption>
             </figure>
           </div>
           <div class="col-11">
@@ -302,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if(userData.forumc!=='0'){
             const createTopicHTMLData = `
                 <form id="createPost" class="card" enctype="multipart/form-data" style="padding: 1rem; margin: 1rem 0rem;">
-                  <input type="hidden" name="id" value="${userData.id}">
+                  <input type="hidden" name="created" value="${userData.firstname}">
                   <div class="row g-3">
                     <div class="col-8">
                       <div class="mb-3">
@@ -313,8 +334,8 @@ document.addEventListener('DOMContentLoaded', function () {
                       </div>
                     </div>
                     <div class="col-3">
-                      <img src="image/image-placeholder.png" class="rounded mx-auto d-block" style="width: 10rem;" id="dpl">
-                      <input type="file" class="form-control" name="file1" accept="image/*" id="postImg">
+                      <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" class="rounded mx-auto d-block" style="width: 10rem;" id="imageHolder">
+                      <input type="file" class="form-control" name="image" accept="image/*" id="imagein">
                     </div>
                     <div class="col-sm">
                       <input type="submit" class="btn btn-primary" value="Create">
@@ -323,21 +344,68 @@ document.addEventListener('DOMContentLoaded', function () {
                 </form>
             `;
             createTopic.insertAdjacentHTML('beforeend', createTopicHTMLData);
+            $('#imagein').on('change', function(event) {
+              const file = event.target.files[0];
+              if (file) {
+                $('#imageHolder').attr('src', URL.createObjectURL(file))
+              }
+            })
+            $(document).ready(function(e) {
+              $('#createPost').on('submit', function(e) {
+                e.preventDefault();
+                console.log('ready to create post.');
+
+                const topic = document.getElementById('topicId');
+                const content = document.getElementById('contentId');
+
+                  if(!topic.value.length || !content.value.length){
+                    console.log('No Details Input');
+                  }else{
+                    $.ajax({
+                      type: 'POST',
+                      url: 'php/action.php?action=Forum',
+                      data: new FormData(this),
+                      datatype: 'json',
+                      contentType: false,
+                      cache: false,
+                      processData: false,
+                      error: function(err) {
+                        console.log('error: ', err);
+                      },
+                      success: function(data) {
+                        console.log(data);
+                        location.reload();
+                      }
+                    });
+                  }
+              })
+            })
           }else{
             const createTopicHTMLData = `
             <div class="text-center text-muted"><i class="fa-solid fa-triangle-exclamation text-danger"></i><h5>Create Topic Restricted.</h5></div>
             `;
             createTopic.insertAdjacentHTML('beforeend', createTopicHTMLData);
           }
-        } else {
-          console.log('User not found in alumniData');
         }
       }
       
     }
-    setInterval(() => {
-      fetchData();
-    }, 500);
+    fetchData();
+  }else{
+    const itemUser = document.querySelector('#items');
+      itemUser.innerHTML = '';
+  
+      const itemUserHTMLData = `
+      <li class="nav-item" role="presentation">
+        <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+        data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+        data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+      </li>
+      `;
+      itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
   }
 
 })

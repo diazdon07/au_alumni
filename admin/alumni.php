@@ -151,7 +151,7 @@ function updateSource(){
               const modalHTMLData = `
               <div class="row">
                 <div class="col">
-                  <img src="${data.photo || '../image/image-placeholder.png'}" class="img-thumbnail">
+                  <img src="${data.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png'}" class="img-thumbnail">
                 </div>
                 <div class="col">
                   <div class="row g-0">
@@ -219,9 +219,12 @@ function updateSource(){
                     success: function(data) {
                       if(data.error){
                         console.log(data.error);
+                        showMessage('error',data.error);
                       }else{
-                        console.log(data);
-                        
+                        showMessage('success',data);
+                        setInterval(() => {
+                          location.reload();
+                        }, 5000);
                       }
                     }
                   })
@@ -234,9 +237,7 @@ function updateSource(){
     })
 
 }
-setInterval(() => {
   fetchAlumniData();
-}, 500);
 
 })
                 </script>

@@ -24,14 +24,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   
     function fetchData(){
-        fetch('php/jobs.php')
-        .then(response => response.json()) // Assuming the PHP returns JSON data
-        .then(data => {
+      const jobPromise = fetch('php/jobs.php')
+      .then(response => response.json()) // Assuming the PHP returns JSON data
+      .then(data => {
   
-          updateJobData(data);
-        })
-        .catch(error => console.error('Error fetching job data:', error));
+         updateJobData(data);
+      })
+      .catch(error => console.error('Error fetching job data:', error));
+
   
+      jobPromise.then(() => {
+        updateJobSource();
+      })
       }
      
     function updateJobSource(){
@@ -144,8 +148,5 @@ document.addEventListener('DOMContentLoaded', function () {
           })
         })
     } 
-    
-    setInterval(() => {
-      fetchData();
-    }, 500);
+    fetchData();
   })

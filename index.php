@@ -17,10 +17,12 @@
 
   <!-- Data Tables & jquery 3.6.0 -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
+<ul class="notifications"></ul>
 <?php 
   include 'db/dbcon.php';
   include 'nav.php';
@@ -37,3 +39,4 @@
 </body>
 </html>
 <script src="js/systemSetting.js"></script>
+<script src="js/showMessage.js"></script>

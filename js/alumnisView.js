@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
       data.forEach(alumni => {
         const alumniCourse = courseData.find(course => course.id === alumni.course);
         if(alumni.photo === undefined  || alumni.photo === null){
-          var image = 'image/image-placeholder.png';
+          var image = 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
         }else{
           var image = alumni.photo;
         }
@@ -107,10 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json()) // Assuming the PHP returns JSON data
         .then(data => {
           // Use the received data as the alumniData
-          updateAlumniData(data);
           displayFilteredResults(data);
+          updateAlumniData(data);
         })
         .catch(error => console.error('Error fetching alumni data:', error));
+
+        
     }
   
     // Add event listener to the Search button to handle filtering
@@ -140,8 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   
     // Call the fetch function initially to load all alumni data
-    setInterval(() => {
-      fetchData();
-    }, 500);
+    fetchData();
    
 });

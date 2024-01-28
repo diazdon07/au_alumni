@@ -69,19 +69,22 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-let user = JSON.parse(sessionStorage.user);
+window.onload = function() {
+    let user = JSON.parse(sessionStorage.user);
 
-$('input[name="id"]').val(user.id);
-$('input[name="firstname"]').val(user.firstname);
-$('input[name="middlename"]').val(user.middlename);
-$('input[name="lastname"]').val(user.lastname);
-$('select[name="gender"]').val(user.gender);
-$('#imageHolder').attr('src', user.photo || '../image/image-placeholder.png');
+    $('input[name="id"]').val(user.id);
+    $('input[name="firstname"]').val(user.firstname);
+    $('input[name="middlename"]').val(user.middlename);
+    $('input[name="lastname"]').val(user.lastname);
+    $('select[name="gender"]').val(user.gender);
+    $('#imageHolder').attr('src', user.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
 
-$('input[name="email"]').val(user.email);
-$('input[name="contact"]').val(user.contact);
+    $('input[name="email"]').val(user.email);
+    $('input[name="contact"]').val(user.contact);
 
-$('input[name="displayName"]').val(user.displayName);
+    $('input[name="displayName"]').val(user.displayName);
+}
+
 
 $('#mobile').keydown(function(event) {
     if(!isNaN(event.key) || event.key === 'Backspace') {
@@ -117,11 +120,15 @@ $(document).ready(function(e) {
       },
       success: function(data) {
         if(data.error){
-          console.log(data.error)
+          console.log(data.error);
+          showMessage('erorr',data.error);
         }else{
+          showMessage('success','Your account successfull change.');
           data.authToken = generateToken(data.email);
           sessionStorage.user = JSON.stringify(data);
-          location.reload();
+          setInterval(() => {
+            location.reload();
+          }, 5000);
         }
       }
     })

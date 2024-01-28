@@ -17,12 +17,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     function fetchData(){
+      setInterval(() => {
         fetch('php/galleries.php')
         .then(response => response.json()) // Assuming the PHP returns JSON data
         .then(data => {
             updateGalleryData(data);
         })
         .catch(error => console.error('Error fetching gallery data:', error));
+      }, 500);
     }
 
     function updategallerySource(){
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const galleryHTMLData = `
             <div class="col-4">
                 <div class="card">
-                <img src="${data.photo || 'image/image-placeholder.png'}" class="img-fluid" alt="${data.title}">
+                <img src="${data.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png'}" class="img-fluid" alt="${data.title}">
                 </div>
             </div>
             `;
@@ -41,7 +43,5 @@ document.addEventListener('DOMContentLoaded', function () {
           });
     }
 
-    setInterval(() => {
-      fetchData();
-    }, 500);
+    fetchData();
 })

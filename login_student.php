@@ -23,11 +23,8 @@
 include 'db/dbcon.php';
 ?>
 <body style="background: white;">
-    <!-- modal alert -->
-    <div class="message-box" id="messageBox">
-        <span class="close-button btn-close " role="button"></span>
-        <p id="messageText"></p>
-    </div>
+
+    <ul class="notifications"></ul>
     <!-- Login Form -->
     <div class="card box-form" id="login-form">
         <div class="logo">
@@ -140,9 +137,12 @@ include 'db/dbcon.php';
             </div>
         </form>
     </div>
+<script src="js/showMessage.js"></script>
 <script src="js/token.js"></script>
 <script src="js/systemSetting.js"></script>
 <script>    
+document.addEventListener('DOMContentLoaded', function () {
+
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const forgetPassword = document.getElementById('forget-form');
@@ -232,7 +232,7 @@ $(document).ready(function() {
     console.log('Click Login.');
     if(!emailLog.value.length || !pwdLog.value.length){
         console.log('No Input email and password.');
-        showAlert('error','No Input email and password.');
+        showMessage('error','No Input email and password.');
     }else{
         console.log('Details are ready to process.');
         $.ajax({
@@ -248,13 +248,19 @@ $(document).ready(function() {
             },
             success: function(data) {
                 if(data.error){
-                    showAlert('error',data.error);
+                    showMessage('error',data.error);
                 }else{
                     console.log('Success data Recieve');
-                    data.authToken = generateToken(data.email);
-                    sessionStorage.user = JSON.stringify(data);
-                    showAlert('success','Account successfully login.');
-                    location.reload()
+                    if(!data.error){
+                        data.authToken = generateToken(data.email);
+                        sessionStorage.user = JSON.stringify(data);
+                        showMessage('success','Account successfully login.');
+                        setInterval(() => {
+                        location.replace('index.php')
+                        }, 1000);
+                    }else{
+                        showMessage('error',data.error);
+                    }
                 }
             }
         })
@@ -265,7 +271,7 @@ $(document).ready(function() {
     console.log('Click Submit forget password.');
     if(!emailForget.value.length){
         console.log('No email provide.');
-        showAlert('error','No email provide.');
+        showMessage('error','No email provide.');
     }else{
         console.log('Details are ready to process.');
         $.ajax({
@@ -283,36 +289,110 @@ $(document).ready(function() {
         })
     }
   })
+
+const alumniData = [];
+const userData = [];
+
+function updateAlumniData(data) {
+    
+  alumniData.length = 0; 
+
+  data.forEach(alumni => {
+    alumniData.push({
+      id: alumni.id,
+      student_number: alumni.student_number,
+      firstname: alumni.firstname,
+      middlename: alumni.middlename,
+      lastname: alumni.lastname,
+      gender: alumni.gender,
+      address: alumni.address,
+      city: alumni.city,
+      course: alumni.course,
+      batch: alumni.batch,
+      photo: alumni.photo
+    });
+  });
+}
+  
+function updateUserData(data) {
+      
+  userData.length = 0; // Clear the existing userData array
+  // Push each fetched event to the userData array
+    data.forEach(system => {
+      userData.push({
+        id: system.id,
+        displayName: system.displayName,
+        email: system.email,
+        contact: system.contact,
+        status: system.status,
+        type: system.type
+      });
+    });
+}
+
+function fetchData() {
+  const alumniFetch = fetch('php/alumnis.php')
+    .then(response => response.json()) // Assuming the PHP returns JSON data
+    .then(data => {
+      // Use the received data as the alumniData
+      updateAlumniData(data);
+    })
+    .catch(error => console.error('Error fetching alumni data:', error));
+
+  const userFetch = fetch('php/users.php')
+    .then(response => response.json()) // Assuming the PHP returns JSON data
+    .then(data => {
+    // Use the received data as the userData
+      updateUserData(data);
+    })
+    .catch(error => console.error('Error fetching userData data:', error));
+
+    Promise.all([alumniFetch,userFetch])
+    .then(() => registerCheck());
+}
+
+function registerCheck(){
   //registration
+
   $('#submit-register').click(function() {
     console.log('Click Registration.');
+
+    const checkStdNo = alumniData.filter(alumni => alumni.student_number === student_number.value);
+    const checkEmail = userData.filter(user => user.email === emailReg.value);
+
     if(!batch.value.length || !course.value.length || !student_number.value.length || 
     !emailReg.value.length || !pwdReg.value.length || !firstname.value.length || 
     !lastname.value.length || !mobile.value.length || !conPwd.value.length ||
     !gender.value.length ){
-        showAlert('error','Incomplete details.')
+        showMessage('error','Incomplete details.')
         console.log('Incomplete details.');
     }else if(gender.value.length === ''){
-        showAlert('error','Please select gender.')
+        showMessage('error','Please select gender.')
         console.log('Please select gender.');
     }else if(firstname.value.length < 3){
-        showAlert('error','Invalid firstname must contain at least 3 letter.')
+        showMessage('error','Invalid firstname must contain at least 3 letter.')
         console.log('Invalid firstname must contain at least 3 letter.');
     }else if(lastname.value.lenth < 4){
-        showAlert('error','Invalid lastname must contain at least 4 letter.')
+        showMessage('error','Invalid lastname must contain at least 4 letter.')
         console.log('Invalid lastname must contain at least 4 letter.');
     }else if(!pwdReg.value.match(/[A-Z]/g)){
-        showAlert('error','Valid Password Must have uppercase letter.')
+        showMessage('error','Valid Password Must have uppercase letter.')
         console.log('Valid Password Must have uppercase letter.');
     }else if(!pwdReg.value.match(/[a-z]/g)){
-        showAlert('error','Valid Password Must have lowecase letter.')
+        showMessage('error','Valid Password Must have lowecase letter.')
         console.log('Valid Password Must have lowecase letter.');
     }else if(!pwdReg.value.match(/[0-9]/g)){
-        showAlert('error','Valid Password Must have at least one number.')
+        showMessage('error','Valid Password Must have at least one number.')
         console.log('Valid Password Must have at least one number.');
     }else if(!pwdReg.value.match(conPwd.value)){
-        showAlert('error','Confirm password not match.')
+        showMessage('error','Confirm password not match.')
         console.log('Confirm password not match.');
+    }else if(checkStdNo.length > 0){
+        showMessage('error',`Student No.:${student_number.value} already used.`)
+        console.log(`Student No.:${student_number.value} already used.`);
+    }else if(checkEmail.length > 0){
+        showMessage('error','Email has already used.')
+        console.log('Email has already used.');
     }else{
         console.log('Details are ready to process.');
         $.ajax({
@@ -329,7 +409,8 @@ $(document).ready(function() {
                 mobile: mobile.value,
                 course: course.value,
                 batch: batch.value,
-                userType: 'student'
+                userType: 'student',
+                type: '1'
             },
             error: err => {
                 console.log('Error: ', err);
@@ -338,10 +419,10 @@ $(document).ready(function() {
                 console.log('Success data Recieve');
                 if(data.error){  
                     console.log(data.error);
-                    showAlert(data.error);
+                    showMessage('error',data.error);
                 }else{
                     setTimeout(function(){
-                        showAlert('success','Account successfully created.');
+                        showMessage('success', data);
                         location.reload();
                     },500)
                 }
@@ -349,31 +430,11 @@ $(document).ready(function() {
         })
     }
   })
+}
+
+fetchData();
 })
-//Alert
-const showAlert = (alert, message) => {
-    if(alert === 'error'){
-        messagePlaceholder.classList.add('bg-danger');
-    }else if(alert === 'success'){
-        messagePlaceholder.classList.add('bg-success');
-    }else{
-        messagePlaceholder.classList.add('bg-primary');
-    }
-    messagePlaceholder.style.display = "inline-block";
-    messageText.textContent = message;
-  }
-  
-messagePlaceholder.addEventListener('click', (event) => {
-    if (event.target.classList.contains('close-button')) {
-        const messageBox = event.target.closest('.message-box');
-        if (messageBox) {
-            messageBox.style.display = 'none';
-            messagePlaceholder.classList.remove('bg-danger');
-            messagePlaceholder.classList.remove('bg-success');
-            messagePlaceholder.classList.remove('bg-primary');
-        }
-    }
-});
+})
 </script>
 </body>
 </body>

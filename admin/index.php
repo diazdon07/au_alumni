@@ -18,29 +18,25 @@ include '../db/dbcon.php';
   
   <!-- Data Tables & jquery 3.6.0 -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> -->
   <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-  <!-- modal alert -->
-<div class="message-box" id="messageBox">
-  <span class="close-button btn-close " role="button"></span>
-  <p id="messageText"></p>
-</div>
 
+<ul class="notifications"></ul>
 <nav class="navbar navbar-expand-lg navbar-dark bg-crimson bg-gradient">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
             <h2 class="text-warning">
-                <img src="../image/logo.png" alt="logo" class="imgLogo" width="40rem">
+                <img src="https://www.freeiconspng.com/uploads/no-image-icon-4.png" alt="logo" class="imgLogo" width="40rem">
                 Admin
             </h2>
             <h6 class="text-white systemName"></h6>
         </a>
         <div class="navbar container-{breakpoint}">
             <div class="d-none" id="profile">
-              <img src="../image/user.png" class="profileImg" alt="" id="profileImage">
+              <img src="https://www.freeiconspng.com/uploads/profile-icon-9.png" class="profileImg" alt="" id="profileImage">
               <div class="btn-group" style="margin-right: 1rem; margin-left: 1rem;">
                 <a class="nav-link dropdown-toggle text-white" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: larger;">
                 </a>
@@ -74,39 +70,12 @@ include '../db/dbcon.php';
   <span class="systemContact text-white"></span>
   <p class="systemEmail text-white"></p>
 </footer>
-<!-- <script src="../js/token.js"></script> -->
+<script src="../js/showMessage.js"></script>
 <script>
 var profileForm = document.getElementById('profile');
 const profileImage = document.querySelector('#profileImage');
 const profilename = document.querySelector('#profileMenu');
 const logout = document.querySelector('#logout');
-
-var messageText = document.querySelector('#messageText');
-var messagePlaceholder = document.querySelector('#messageBox');
-  //Alert
-const showAlert = (alert, message) => {
-    if(alert === 'error'){
-        messagePlaceholder.classList.add('bg-danger');
-    }else if(alert === 'success'){
-        messagePlaceholder.classList.add('bg-success');
-    }else{
-        messagePlaceholder.classList.add('bg-primary');
-    }
-    messagePlaceholder.style.display = "inline-block";
-    messageText.textContent = message;
-  }
-  
-messagePlaceholder.addEventListener('click', (event) => {
-    if (event.target.classList.contains('close-button')) {
-        const messageBox = event.target.closest('.message-box');
-        if (messageBox) {
-            messageBox.style.display = 'none';
-            messagePlaceholder.classList.remove('bg-danger');
-            messagePlaceholder.classList.remove('bg-success');
-            messagePlaceholder.classList.remove('bg-primary');
-        }
-    }
-});
 
 window.onload = () => {
   let user = JSON.parse(sessionStorage.user || null);
@@ -183,7 +152,7 @@ window.onload = () => {
       }
       logout.addEventListener('click', () => {
           sessionStorage.clear();
-          
+          location.reload();
       })
       
     }else if(user.userType === 2){
@@ -266,14 +235,14 @@ function updatesystemData(data) {
     systemData.length = 0; // Clear the existing systemData array
     // Push each fetched event to the systemData array
     data.forEach(system => {
-    systemData.push({
-      systemname: system.systemname,
-      email: system.email,
-      contact: system.contact,
-      logo: system.logo,
-      aboutimage: system.aboutimage,
-      aboutcontent: system.aboutcontent
-    });    
+      systemData.push({
+        systemname: system.systemname,
+        email: system.email,
+        contact: system.contact,
+        logo: system.logo,
+        aboutimage: system.aboutimage,
+        aboutcontent: system.aboutcontent
+      });    
     });
     updateSource();
 }

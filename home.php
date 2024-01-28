@@ -31,7 +31,7 @@
             if($row['imgData']!==null&&$row['imgType']!==null){
               echo 'data:'.$row["imgType"].';base64,'.base64_encode($row["imgData"]);
             }else{
-              echo 'image/image-placeholder.png';
+              echo 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
             } 
             ?>" alt="Slide <?= $item_counter + 1 ?>">
           </div>
@@ -55,11 +55,6 @@
       </button>
   </div>
 </header>
-<!-- modal alert -->
-<div class="message-box" id="messageBox">
-  <span class="close-button btn-close " role="button"></span>
-  <p id="messageText"></p>
-</div>
 
 <div class="container-fluid" style="margin: 1rem 0rem;">
   <ul class="nav nav-tabs" id="items">
@@ -200,52 +195,3 @@
     </div>
   </section>
 </div>
-<script>
-
-let user = JSON.parse(sessionStorage.user || null);
-
-if(user != null){
-  const itemUser = document.querySelector('#items');
-          itemUser.innerHTML = '';
-  
-          const itemUserHTMLData = `
-            <li class="nav-item" role="presentation">
-              <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
-              data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
-              data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
-              data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="job-tab" data-bs-toggle="tab" 
-              data-bs-target="#job" type="button" role="tab" aria-controls="ob" aria-selected="false">Job List</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
-              data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
-            </li>
-          `;
-          itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
-    }else{
-      const itemUser = document.querySelector('#items');
-      itemUser.innerHTML = '';
-  
-      const itemUserHTMLData = `
-      <li class="nav-item" role="presentation">
-        <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
-        data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
-        data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
-      </li>
-      `;
-      itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
-}
-
-</script>
