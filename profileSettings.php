@@ -118,6 +118,10 @@ const profileImage = document.querySelector('#profileImage');
 const profilename = document.querySelector('#profileMenu');
 const logout = document.querySelector('#logout');
 
+const courseData = [];
+const alumniData = [];
+const userData = [];
+
   window.onload = () =>{
     let user = JSON.parse(sessionStorage.user || null);
     if(user != null){
@@ -129,29 +133,7 @@ const logout = document.querySelector('#logout');
           profileForm.classList.add("d-block");
           profileForm.classList.remove("d-none");
           profilename.innerHTML = `${user.displayName}`;
-          $('#stdno').html(user.studentno);
-          $('input[name="id"]').val(user.id);
-          $('input[name="firstname"]').val(user.firstname);
-          $('input[name="middlename"]').val(user.middlename);
-          $('input[name="lastname"]').val(user.firstname);
-          $('input[name="city"]').val(user.city);
-          $('select[name="gender"]').val(user.gender);
-          $('input[name="address"]').val(user.address);
-          $('select[name="course"]').val(user.course);
-          $('select[name="employmentStatus"]').val(user.employmentStatus);
-          $('input[name="position"]').val(user.position);
-          $('input[name="comapny"]').val(user.comapny);
-          $('#imageHolder').attr('src', user.photo  || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
-          $('select[name="batch"]').val(user.batch);
-
-          $('input[name="email"]').val(user.email);
-          $('input[name="contact"]').val(user.contact);
-
-          $('input[name="displayName"]').val(user.displayName);
-          if(user.photo !== null){
-          profileImage.src = user.photo
           
-          }
           logout.addEventListener('click', () => {
               sessionStorage.clear();
               location.replace('index.php');
@@ -203,7 +185,45 @@ $('#status').change(function (){
     }
 })
 
-const courseData = [];
+function updateAlumniData(data) {
+
+  alumniData.length = 0;
+
+    data.forEach(alumni => {
+      alumniData.push({
+        id: alumni.id,
+        student_number: alumni.student_number,
+        firstname: alumni.firstname,
+        middlename: alumni.middlename,
+        lastname: alumni.lastname,
+        gender: alumni.gender,
+        address: alumni.address,
+        city: alumni.city,
+        course: alumni.course,
+        batch: alumni.batch,
+        photo: alumni.photo,
+        status: alumni.status,
+        position: alumni.position,
+        company: alumni.company
+      });
+    });
+}
+  
+function updateuserData(data) {
+      
+  userData.length = 0; 
+  
+    data.forEach(system => {
+      userData.push({
+        id: system.id,
+        displayName: system.displayName,
+        email: system.email,
+        contact: system.contact,
+        status: system.status,
+        type: system.type
+      });
+    });
+}
 
 function updateCoursesData(data) {
     
@@ -219,13 +239,32 @@ function updateCoursesData(data) {
 }
 
 function fetchCoursesData() {
-    fetch('php/courses.php')
-    .then(response => response.json())
-    .then(data => {
+    const courseFetch = fetch('php/courses.php')
+        .then(response => response.json())
+        .then(data => {
 
-        updateCoursesData(data);
-    })
-    .catch(error => console.error('Error fetching courses data:', error));
+          updateCoursesData(data);
+        })
+        .catch(error => console.error('Error fetching courses data:', error));
+
+    const alumniFetch = fetch('php/alumnis.php')
+        .then(response => response.json())
+        .then(data => {
+
+          updateAlumniData(data);
+        })
+        .catch(error => console.error('Error fetching alumni data:', error));
+
+    const userFetch = fetch('php/users.php')
+        .then(response => response.json())
+        .then(data => {
+
+        updateuserData(data);
+        })
+        .catch(error => console.error('Error fetching userData data:', error));
+
+    Promise.all([courseFetch, alumniFetch, userFetch])
+    .then(() => profileData());
 }
 
 function courseDropdownData() {
@@ -237,6 +276,35 @@ function courseDropdownData() {
         optionCourses.value = courses.id;
         ddlCourses.appendChild(optionCourses);
     });
+}
+
+function profileData(){
+    let user = JSON.parse(sessionStorage.user || null);
+
+    const profile = alumniData.find(alumni => alumni.id === user.id);
+
+    $('#stdno').html(profile.student_number);
+    $('input[name="id"]').val(user.id);
+    $('input[name="firstname"]').val(user.firstname);
+    $('input[name="middlename"]').val(profile.middlename);
+    $('input[name="lastname"]').val(profile.lastname);
+    $('input[name="city"]').val(profile.city);
+    $('select[name="gender"]').val(profile.gender);
+    $('input[name="address"]').val(profile.address);
+    $('select[name="course"]').val(profile.course);
+    $('select[name="employmentStatus"]').val(profile.status);
+    $('input[name="position"]').val(profile.position);
+    $('input[name="comapny"]').val(profile.comapny);
+    $('#imageHolder').attr('src', profile.photo  || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
+    $('select[name="batch"]').val(profile.batch);
+
+    $('input[name="email"]').val(user.email);
+    $('input[name="contact"]').val(user.contact);
+
+    $('input[name="displayName"]').val(user.displayName);
+    if(profile.photo !== null){
+    profileImage.src = profile.photo
+    }
 }
 
 $(document).ready(function(e) {

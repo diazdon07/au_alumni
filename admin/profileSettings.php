@@ -7,7 +7,7 @@
                 <div class="col-3">
                     <input type="hidden" name="id">
                     <div class="mb-3">
-                        <img alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
+                        <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
                     </div>
                     <div class="mb-3">
                         <input type="file" class="form-control" accept="image/*" id="imagein" name="image" >
@@ -69,23 +69,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-window.onload = function() {
-    let user = JSON.parse(sessionStorage.user);
-
-    $('input[name="id"]').val(user.id);
-    $('input[name="firstname"]').val(user.firstname);
-    $('input[name="middlename"]').val(user.middlename);
-    $('input[name="lastname"]').val(user.lastname);
-    $('select[name="gender"]').val(user.gender);
-    $('#imageHolder').attr('src', user.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
-
-    $('input[name="email"]').val(user.email);
-    $('input[name="contact"]').val(user.contact);
-
-    $('input[name="displayName"]').val(user.displayName);
-}
-
-
 $('#mobile').keydown(function(event) {
     if(!isNaN(event.key) || event.key === 'Backspace') {
         if($(this).val().length >= 10 && event.key !== 'Backspace'){
@@ -95,6 +78,56 @@ $('#mobile').keydown(function(event) {
         event.preventDefault();       
     }
 })
+
+const adminData = [];
+
+function updateAdminData(data) {
+    
+    adminData.length = 0; // Clear the existing eventData array
+      // Push each fetched event to the alumniData array
+    data.forEach(admin => {
+      adminData.push({
+        id: admin.id,
+        firstname: admin.firstname,
+        middlename: admin.middlename,
+        lastname: admin.lastname,
+        gender: admin.gender,
+        photo: admin.photo
+      });
+    });
+}
+
+function fetchCoursesData() {
+    const adminFetch = fetch('../php/admins.php')
+        .then(response => response.json())
+        .then(data => {
+
+            updateAdminData(data);
+        })
+        .catch(error => console.error('Error fetching courses data:', error));
+
+    adminFetch.then(() => profileData());
+}
+
+function profileData() {
+    let user = JSON.parse(sessionStorage.user);
+
+    const profileDetails = adminData.find(admin => admin.id === user.id);
+
+    $('input[name="id"]').val(profileDetails.id);
+    $('input[name="firstname"]').val(profileDetails.firstname);
+    $('input[name="middlename"]').val(profileDetails.middlename);
+    $('input[name="lastname"]').val(profileDetails.lastname);
+    $('select[name="gender"]').val(profileDetails.gender);
+    $('#imageHolder').attr('src', profileDetails.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
+
+    $('input[name="email"]').val(user.email);
+    $('input[name="contact"]').val(user.contact);
+
+    $('input[name="displayName"]').val(user.displayName);
+}
+
+fetchCoursesData();
 
 $('#imagein').on('change', function(event) {
     const file = event.target.files[0];
