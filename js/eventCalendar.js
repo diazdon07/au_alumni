@@ -169,11 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const eventUrl = document.createElement('a');
         eventUrl.href = event.url;
         eventUrl.textContent = event.url;
-        const commit = document.createElement('a');
-        commit.classList.add('btn','btn-primary','me-md-2','commitedBtn');
-        commit.setAttribute('data-id',event.id);
-        commit.setAttribute('data-user',user.id);
-        commit.textContent = 'Commite';
 
         eventRow.appendChild(eventTitle);
         eventRow.appendChild(eventTime);
@@ -185,6 +180,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         var commited = commitData.filter(commit => commit.eventId === event.id);
         if(user != null){
+          const commit = document.createElement('a');
+          commit.classList.add('btn','btn-primary','me-md-2','commitedBtn');
+          commit.setAttribute('data-id',event.id);
+          commit.setAttribute('data-user',user.id);
+          commit.textContent = 'Commite';
           if(commited.length === 0 ){
             eventRow.appendChild(commit);
           }

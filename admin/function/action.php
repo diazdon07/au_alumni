@@ -514,7 +514,7 @@ if(isset($_GET['action'])){
                                     $photo = null;
                                 }
                                 $dataArray = array(
-                                    'id' => $row['id'],
+                                    'id' => strval($row['id']),
                                     'displayName' => $rowUser['displayName'],
                                     'firstname' => $row['firstname'],
                                     'middlename' => $row['middlename'],

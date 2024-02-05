@@ -39,7 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
           city: alumni.city,
           course: alumni.course,
           batch: alumni.batch,
-          photo: alumni.photo
+          photo: alumni.photo,
+          status: alumni.status,
+          position: alumni.position,
+          company: alumni.company
         });
       });
     }
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         const alumniCardHTML = `
-        <div class="col-auto">
+        <div class="col-auto alumniBtn" role="button" data-id="${alumni.id}">
           <div class="card" style="width: 18rem;">
             <div class="card-body">
               <img class="card-img-top" src="${image}">
@@ -79,17 +82,75 @@ document.addEventListener('DOMContentLoaded', function () {
               <p class="card-text">Gender: ${alumni.gender === '0' ? 'Male' : 'Female'}</p>
               <p class="card-text">Course: ${alumniCourse ? alumniCourse.course : 'Unknown'}</p>
               <p class="card-text">Batch: ${alumni.batch}</p>
-              <!-- Include other alumni details as needed -->
+              <p class="card-text">Employement Status: ${alumni.status === '0' ? 'Unemployed' : 'Employed'}</p>
             </div>
           </div>
         </div>
         `;
   
         alumniContent.insertAdjacentHTML('beforeend', alumniCardHTML);
-        // Create HTML elements to display alumni details and append them to alumniContent
-        // Example: Create cards or list items to display each alumni's information
-        // alumniContent.appendChild(/* Create and append HTML elements */);
       });
+      document.querySelectorAll('.alumniBtn').forEach(element => {
+        element.addEventListener('click', function() {
+          console.log(`Click Alumni card ID no.: ${this.getAttribute('data-id')}`);
+          $('#alumniList').hide();
+          $('#alumniView').show();
+
+          const backHtml =`
+          <div class="mb-3">
+            <a role="button" class="ptag text-muted" id="backAlumni"><i class="fa fa-chevron-left"></i> Back</a>
+          </div>
+          `;
+          
+          $('#alumniView').append(backHtml);
+
+          $('#backAlumni').click(function(){
+            $('#alumniList').show();
+            $('#alumniView').html('');
+          });
+
+          const dataDetails = alumniData.find(alumni => alumni.id === this.getAttribute('data-id'));
+          const course = courseData.find(course => course.id === dataDetails.course);
+          
+          const alumniHTML = `
+            <div class="row">
+              <div class="col-4">
+                <figure class="figure">
+                  <img src="${dataDetails.photo || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png'}" class="figure-img img-fluid rounded" width="500" height="500">
+                </figure>
+              </div>
+              <div class="col">
+                <div class="row">
+                  <h3>${dataDetails.lastname}, ${dataDetails.firstname}</h3>
+                </div>
+                <hr>
+                <div class="row">
+                  <p><b>Student No.: ${dataDetails.student_number}</b></p>
+                </div>
+                <div class="row">
+                  <h6>Course: ${course.course}</h6>
+                </div>
+                <div class="row">
+                  <h6>Batch: ${dataDetails.batch}</h6>
+                </div>
+                <div class="row">
+                  <h6>Gender: ${dataDetails.gender === '0' ? 'Male' : 'Female'}</h6>
+                </div>
+                <div class="row">
+                  <h6>Employment Status: ${dataDetails.status === '0' ? 'Unemployed' : 'Employed'}</h6>
+                </div>
+                <div class="row">
+                  ${dataDetails.position!==null? '<h6>Position: '+dataDetails.position+'</h6>':''}
+                </div>
+                <div class="row">
+                  ${dataDetails.company!==null ? '<h6>Company: '+ dataDetails.company+'</h6>': ''}
+                </div>
+              </div>
+            </div>
+          `;
+          $('#alumniView').append(alumniHTML);
+        })
+      })
     }
 
     function fetchData() {
@@ -112,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Error fetching alumni data:', error));
 
-        
     }
   
     // Add event listener to the Search button to handle filtering
@@ -133,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
           (selectedGender === '-Select Gender-' || alumni.gender === selectedGender) &&
           (selectedCourse === '-Select Course-' || alumni.course === selectedCourse) &&
           (selectedBatch === '-Select Batch-' || alumni.batch == selectedBatch) &&
-          (selectedStatus === '-Select Employment Status-' || alumni.employment_status === selectedStatus)
+          (selectedStatus === '-Select Employment Status-' || alumni.status === selectedStatus)
         );
       });
   

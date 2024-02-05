@@ -93,7 +93,7 @@
     </div>
     <!-- Alumni Tabs  -->
     <div class="tab-pane fade" id="alumni" role="tabpanel" aria-labelledby="alumni-tab">
-      <div class="row">
+      <div class="row" id="alumniList">
         <div class="col sm-3">
           <div class="card" style="width: 18rem;">
             <div style="margin: 1rem;">
@@ -127,8 +127,8 @@
               <div class="mb-3">
                 <select name="status" id="status" class="form-control">
                   <option>-Select Employment Status-</option>
-                  <option>Unemployed</option>
-                  <option>Employed</option>
+                  <option value="0">Unemployed</option>
+                  <option value="1">Employed</option>
                 </select>
               </div>
               <button class="btn btn-primary" id="searchBtn">Search</button>
@@ -140,13 +140,19 @@
           <div class="pagination-container text-center my-4"></div>
         </div>
       </div>
+      <div id="alumniView">
+        
+      </div>
       <script src="js/alumnisView.js"></script>
     </div>
     <!-- Gallery Tabs  -->
     <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
       <div class="container-fluid px-4">
-        <div class="row g-5 card-row">
+        <div class="row g-5 card-row" id="galleryList">
           
+        </div>
+        <div id="galleryView">
+      
         </div>
       </div>
       <script src="js/galleryView.js"></script>

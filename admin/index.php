@@ -146,7 +146,7 @@ window.onload = () => {
 
       profileForm.classList.add("d-block");
       profileForm.classList.remove("d-none");
-      profilename.innerHTML = `${user.lastname}, ${user.firstname}`;
+      profilename.innerHTML = `${user.displayName}`;
       if(user.photo !== null){
         profileImage.src = user.photo
       }
