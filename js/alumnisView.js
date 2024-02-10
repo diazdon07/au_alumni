@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const alumniData = [];
     const courseData = [];
   
-    for (let i = 1950; i <= currentYear; i++) {
+    for (let i = 2000; i <= currentYear; i++) {
       const optionYears = document.createElement("option");
       optionYears.innerHTML = i;
       optionYears.value = i;
