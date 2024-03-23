@@ -1,43 +1,43 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    let user = JSON.parse(sessionStorage.user || null);
+    // let user = JSON.parse(sessionStorage.user || null);
 
-    if(user != null){
-      const createdBy = document.getElementById('userS');
-      const topicId = document.getElementById('topicId');
-      const contentId = document.getElementById('contentId');
+    // if(user != null){
+    //   const createdBy = document.getElementById('userS');
+    //   const topicId = document.getElementById('topicId');
+    //   const contentId = document.getElementById('contentId');
 
       const forumData = [];
       const commentData = [];
       const alumniData = [];
       const adminData = [];
 
-      const itemUser = document.querySelector('#items');
-          itemUser.innerHTML = '';
+      // const itemUser = document.querySelector('#items');
+      //     itemUser.innerHTML = '';
   
-          const itemUserHTMLData = `
-            <li class="nav-item" role="presentation">
-              <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
-              data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
-              data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
-              data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="job-tab" data-bs-toggle="tab" 
-              data-bs-target="#job" type="button" role="tab" aria-controls="ob" aria-selected="false">Job List</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
-              data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
-            </li>
-          `;
-          itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
+      //     const itemUserHTMLData = `
+      //       <li class="nav-item" role="presentation">
+      //         <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+      //         data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+      //       </li>
+      //       <li class="nav-item">
+      //         <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+      //         data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+      //       </li>
+      //       <li class="nav-item">
+      //         <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
+      //         data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
+      //       </li>
+      //       <li class="nav-item">
+      //         <a class="nav-link text-black" id="job-tab" data-bs-toggle="tab" 
+      //         data-bs-target="#job" type="button" role="tab" aria-controls="ob" aria-selected="false">Job List</a>
+      //       </li>
+      //       <li class="nav-item">
+      //         <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
+      //         data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
+      //       </li>
+      //     `;
+      //     itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
 
     function updateForumData(data) {
       
@@ -150,8 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateForumSource(){
-      let user = JSON.parse(sessionStorage.user || null);
-      const userData = alumniData.find(alumni => alumni.id === user.id);
+
+      const userData = alumniData.find(alumni => alumni.id === userId);
       const forumsData = document.querySelector('.forumData');
       forumsData.innerHTML = '';
 
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $('#post').html('');
           });
 
-          if(userData.commentc!=='0'){
+          if(!userData.commentc==='0'){
             const commentHtml = `
             <div class="mb-3">
               <form id="createComment" class="row g-2">
@@ -312,10 +312,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function topicCreateRestriction(){
-      let user = JSON.parse(sessionStorage.user || null);
       
-      if(user != null){
-        const userData = alumniData.find(alumni => alumni.id === user.id);
+      if(userId != null){
+        const userData = alumniData.find(alumni => alumni.id === userId);
         const createTopic = document.querySelector('#createTopic');
         createTopic.innerHTML = '';
       
@@ -391,21 +390,21 @@ document.addEventListener('DOMContentLoaded', function () {
       
     }
     fetchData();
-  }else{
-    const itemUser = document.querySelector('#items');
-      itemUser.innerHTML = '';
+  // }else{
+  //   const itemUser = document.querySelector('#items');
+  //     itemUser.innerHTML = '';
   
-      const itemUserHTMLData = `
-      <li class="nav-item" role="presentation">
-        <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
-        data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
-        data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
-      </li>
-      `;
-      itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
-  }
+  //     const itemUserHTMLData = `
+  //     <li class="nav-item" role="presentation">
+  //       <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+  //       data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+  //     </li>
+  //     <li class="nav-item">
+  //       <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+  //       data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+  //     </li>
+  //     `;
+  //     itemUser.insertAdjacentHTML('beforeend', itemUserHTMLData);
+  // }
 
 })

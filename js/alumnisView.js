@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <h5 class="card-title">${alumni.firstname} ${alumni.lastname}</h5>
               <p class="card-text">Student Number: ${alumni.student_number}</p>
               <p class="card-text">Gender: ${alumni.gender === '0' ? 'Male' : 'Female'}</p>
-              <p class="card-text">Course: ${alumniCourse ? alumniCourse.course : 'Unknown'}</p>
+              <p class="card-text">Program: ${alumniCourse ? alumniCourse.course : 'Unknown'}</p>
               <p class="card-text">Batch: ${alumni.batch}</p>
               <p class="card-text">Employement Status: ${alumni.status === '0' ? 'Unemployed' : 'Employed'}</p>
             </div>
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   <p><b>Student No.: ${dataDetails.student_number}</b></p>
                 </div>
                 <div class="row">
-                  <h6>Course: ${course.course}</h6>
+                  <h6>Program: ${course.course}</h6>
                 </div>
                 <div class="row">
                   <h6>Batch: ${dataDetails.batch}</h6>
@@ -185,13 +185,18 @@ document.addEventListener('DOMContentLoaded', function () {
   
       // Filter the alumni data based on the selected criteria
       const filteredAlumni = alumniData.filter(alumni => {
+        const alumniFirstNameLower = alumni.firstname.toLowerCase();
+        const alumniLastNameLower = alumni.lastname.toLowerCase();
+        const alumniFullNameLower = `${alumniLastNameLower} ${alumniFirstNameLower}`;
+        const alumniStudentNumberLower = alumni.student_number.toLowerCase();
         return (
           (searchValue === '' ||
-            alumni.firstname.toLowerCase().includes(searchValue) ||
-            alumni.lastname.toLowerCase().includes(searchValue) ||
-            alumni.student_number.toLowerCase().includes(searchValue)) &&
+            alumniFirstNameLower.includes(searchValue) ||
+            alumniLastNameLower.includes(searchValue) ||
+            alumniFullNameLower.includes(searchValue) ||
+            alumniStudentNumberLower.includes(searchValue)) &&
           (selectedGender === '-Select Gender-' || alumni.gender === selectedGender) &&
-          (selectedCourse === '-Select Course-' || alumni.course === selectedCourse) &&
+          (selectedCourse === '-Select Program-' || alumni.course === selectedCourse) &&
           (selectedBatch === '-Select Batch-' || alumni.batch == selectedBatch) &&
           (selectedStatus === '-Select Employment Status-' || alumni.status === selectedStatus)
         );

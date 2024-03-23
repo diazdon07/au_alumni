@@ -292,9 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(() => updateCalendar());
     }
 
-    
-    setInterval(() => {
-      fetchEventData();
-      updateCalendar();
-    }, 500);
+  
+    fetchEventData();
+    updateCalendar();
   });
