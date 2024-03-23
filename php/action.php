@@ -1,9 +1,12 @@
 <?php
 include '../db/dbcon.php';
+session_start();
 header('Content-Type: application/json');
 if(isset($_GET['action'])){
     $action = $_GET['action'];
     $dataArray = array();
+    $maxImg = 300 * 1024 * 1024;
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
     extract($_POST);
 
     //Login
@@ -39,7 +42,7 @@ if(isset($_GET['action'])){
                                         }else{
                                             $photo = null;
                                         }
-                                        $dataArray = array(
+                                        $_SESSION['user_info'] = array(
                                             'id' => $row['id'],
                                             'studentno' => $row['student_number'],
                                             'displayName' => $displayName,
@@ -56,9 +59,10 @@ if(isset($_GET['action'])){
                                             'contact' => $mobile,
                                             'employmentStatus' => $row['employment_status'],
                                             'position' => $row['position'],
-                                            'company' => $row['company']
+                                            'company' => $row['company'],
+                                            'createJob' => $row['job_create']
                                         );
-                                        echo json_encode($dataArray);
+                                        echo json_encode(array('success' => 'Account successfully login.'));
                                     }
                                 }else{
                                     echo json_encode(array('error' => 'Invalid student profile data.'));
@@ -163,12 +167,16 @@ if(isset($_GET['action'])){
         if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
         
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
                 exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
+                exit;
             }
+
             $imgSet = ",imgType, imgData";
             $dataType = "sssss";
             $stmQus = "?,?,?,?,?";
@@ -248,10 +256,13 @@ if(isset($_GET['action'])){
         if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
         
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            } elseif ($imgSize > $maxImg) {
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
                 exit;
             }
             
@@ -305,7 +316,8 @@ if(isset($_GET['action'])){
                                 }else{
                                     $photo = null;
                                 }
-                                $dataArray = array(
+                                session_unset();
+                                $_SESSION['user_info'] = array(
                                     'id' => strval($row['id']),
                                     'studentno' => $row['student_number'],
                                     'displayName' => $rowUser['displayName'],
@@ -322,9 +334,10 @@ if(isset($_GET['action'])){
                                     'contact' => $rowUser['contact'],
                                     'employmentStatus' => $row['employment_status'],
                                     'position' => $row['position'],
-                                    'company' => $row['company']
+                                    'company' => $row['company'],
+                                    'createJob' => $row['job_create']
                                 );
-                                echo json_encode($dataArray);
+                                echo json_encode('Verified');
                             }else{
                                 echo json_encode(array('error' => 'No User Data Found.'));
                             }
@@ -357,6 +370,44 @@ if(isset($_GET['action'])){
             mysqli_stmt_close($stmt);
         }
     }
+    // logout
+    if($action === 'logout'){
+        session_destroy();
+        echo json_encode('User data Logout');
+    }
+    //Forget password
+    if ($action === 'forgetPass') {
+        $sqlUser = 'SELECT * FROM `user` WHERE email = ?';
+        $sqlCheck = $conn->prepare($sqlUser);
+        $sqlCheck->bind_param('s', $email);
+        
+        if ($sqlCheck->execute()) {
+            $result = $sqlCheck->get_result();
+            $sqlSystem = 'SELECT * FROM `system`';
+            $getResult = $conn->query($sqlSystem);
+            $systemdata = $getResult->fetch_assoc();
+
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $uuid = $row['uid'];
+                $nullPassword = md5($systemdata['defaultPassword']);
+                $disable = 0;
+                $sqlUpdate = 'UPDATE `user` SET password = ?, status = ? WHERE uid = ?';
+                $sqlCheckUpdate = $conn->prepare($sqlUpdate);
+                $sqlCheckUpdate->bind_param('sis', $nullPassword, $disable, $uuid);
+                
+                if ($sqlCheckUpdate->execute()) {
+                    echo json_encode(array('success' => 'Please wait to acknowledge your request. Your account cannot be logged into for security reasons. You may contact the admin via email.'));
+                } else {
+                    echo json_encode(array('error' => 'Error executing update query.'));
+                }
+            } else {
+                echo json_encode(array('error' => 'Your email is not registered in the database. Please input your correct email.'));
+            }
+        } else {
+            echo json_encode(array('error' => 'Error executing select query.'));
+        }
+    }    
     
     mysqli_close($conn);
 };

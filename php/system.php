@@ -24,7 +24,8 @@ if ($result->num_rows > 0) {
             'contact' => $row['contact'],
             'logo' => $logo,
             'aboutimage' => $aboutPhoto,
-            'aboutcontent' => $row['aboutcontent']
+            'aboutcontent' => $row['aboutcontent'],
+            'systemDefaultPass' => $row['defaultPassword']
         );
     }
     $result->free();
