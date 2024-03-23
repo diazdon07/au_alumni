@@ -22,6 +22,7 @@
 <body style="background: white;">
     
     <ul class="notifications"></ul>
+    <div id="agreement"></div>
     <!-- Login Form -->
     <div class="card box-form" id="login-form">
         <div class="logo">
@@ -40,7 +41,7 @@
             <div class="d-grid gap-2 col-6 mx-auto">
                 <button type="button" class="btn btn-primary" id="submit-login">Login</button>
                 <button type="button" class="btn btn-danger" id="back">Back</button>
-                <!-- <a href="#" id="forgetPassword">Forget password</a> -->
+                <a href="#" id="forgetPassword">Forget password</a>
                 <a href="#" id="sign-up">Register</a>
             </div>
         </form>
@@ -117,6 +118,7 @@ const emailLog = document.getElementById('emailLog');
 const pwdLog = document.getElementById('pwdLog');
 const conPwd = document.getElementById('conPwd');
 const emailForget = document.getElementById('emailForget');
+const agreement_popup = document.getElementById('agreement');
 
 var messageText = document.querySelector('#messageText');
 var messagePlaceholder = document.querySelector('#messageBox');
@@ -133,11 +135,11 @@ window.onload = () => {
 }
 
 $('#mobile').keydown(function(event) {
-    if(!isNaN(event.key) || event.key === 'Backspace') {
-        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+    if (!isNaN(event.key) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        if ($(this).val().length >= 10 && event.key !== 'Backspace' && event.key !== 'Delete' || event.keyCode === 32) {
             event.preventDefault();
         }
-    }else{
+    } else if (event.keyCode !== 32) {
         event.preventDefault();       
     }
 })
@@ -168,10 +170,24 @@ $(document).ready(function() {
     var numbers = /[0-9]/g;
     var upperCaseLetters = /[A-Z]/g;
     var lowerCaseLetters = /[a-z]/g;
+
+    emailLog.addEventListener("keypress", function(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+            document.getElementById("submit-login").click();
+        }
+    });
+    pwdLog.addEventListener("keypress", function(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+            document.getElementById("submit-login").click();
+        }
+    });
+
     //login
   $('#submit-login').click(function() {
-    console.log('Click Login.');
-    if(!emailLog.value.length || !pwdLog.value.length){
+    console.log('Click login.');
+    if(!emailLog.value.trim() || !pwdLog.value.trim()){
         console.log('No Input email and password.');
         showMessage('error','No Input email and password.');
     }else{
@@ -252,6 +268,7 @@ $(document).ready(function() {
         console.log('Confirm password not match.');
     }else{
         console.log('Details are ready to process.');
+        
         $.ajax({
             type: 'POST',
             url: 'php/action.php?action=register',

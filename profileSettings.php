@@ -1,111 +1,143 @@
 <div style="margin: 1rem;">
     <div class="card" style="padding: 1rem; min-height: 30rem;">
         <h6 class="text-muted">Profile Settings</h6>
-        <form id="profileAccount">
-            <div class="row">
-                <div class="col-3">
-                    <input type="hidden" name="id">
-                    <div class="mb-3">
-                        <img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png" alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
+        <?php
+        if (!empty($userData)):
+            $displayImage = !empty($userData['photo']) ? $userData['photo'] : 'https://www.freeiconspng.com/uploads/profile-icon-9.png';
+            if($userData['course'] === null){
+                $selectProg = '<option value="null" hidden>-Select Program-</option>';
+            }else{
+                $sqlQuery = $conn->query("SELECT * FROM `courses` WHERE id =".$userData['course']);
+                if($data = $sqlQuery->fetch_assoc()){
+                    $selectProg = '<option value="'. $userData['course'] .'" hidden selected>'.$data['course'].'</option>';
+                }
+            }
+
+            if($userData['batch'] === null){
+                $selectBatch = '<option value="null" hidden>-Select Year Graduated-</option>';
+            }else{
+                $selectBatch = '<option value="'. $userData['batch'] .'" hidden selected>'.$userData['batch'].'</option>';
+            }
+
+            if($userData['gender'] === null){
+                $selectGender = '<option value="null" hidden>-Select Gender-</option>';
+            }else{
+                if($userData['gender'] === '1'){
+                    $gender = 'Female';
+                }else{
+                    $gender = 'Male';
+                }
+                $selectGender = '<option value="'. $userData['gender'] .'" hidden selected>'.$gender.'</option>';
+            }
+            echo <<<HTML
+            <form id="profileAccount">
+                <div class="row">
+                    <div class="col-3">
+                        <input type="hidden" name="id" value="{$userData['id']}">
+                        <div class="mb-3">
+                            <img src="{$displayImage}" alt="image" width="300" class="rounded img-thumbnail" id="imageHolder">
+                        </div>
+                        <div class="mb-3">
+                            <input type="file" class="form-control" accept="image/*" id="imagein" name="image" >
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <input type="file" class="form-control" accept="image/*" id="imagein" name="image" >
+                    <div class="col">
+                        <div class="row">
+                            <div class="col mb-3">
+                                Student No. : <span id="stdno">{$userData['studentno']}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <input type="text" name="displayName" class="form-control" placeholder="Display Name" value="{$userData['displayName']}">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="firstname" class="form-control" placeholder="First Name" value="{$userData['firstname']}">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="middlename" class="form-control" placeholder="Middle Name" value="{$userData['middlename']}">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="lastname" class="form-control" placeholder="Last Name" value="{$userData['lastname']}">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="address" class="form-control" placeholder="Address" value="{$userData['address']}">
+                            </div>
+                            <div class="col-2">
+                                <input type="text" name="city" class="form-control" placeholder="City" value="{$userData['city']}">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col input-group">
+                                <span class="input-group-text" id="addon-course">Program</span>
+                                <select name="course" id="courseDD" class="form-control" aria-describedby="addon-course">
+                                    {$selectProg}
+                                </select>
+                            </div>
+                            <div class="col input-group">
+                                <span class="input-group-text" id="addon-year">Batch</span>
+                                <select class="form-control" aria-describedby="addon-year" name="batch" id="year">
+                                    {$selectBatch}
+                                </select>
+                            </div>
+                            <div class="col">
+                                <select name="gender" class="form-control">
+                                    {$selectGender}
+                                    <option value="0">Male</option>
+                                    <option value="1">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <select name="employmentStatus" id="status" class="form-control">
+                                    <option hidden>-Select Employement Status-</option>
+                                    <option value="0">Unemployed</option>
+                                    <option value="1">Employed</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <input type="text" name="position" class="form-control emplyStat" placeholder="Job Position" value="{$userData['position']}" disabled>
+                            </div>
+                            <div class="col">
+                                <input type="text" name="company" class="form-control emplyStat" placeholder="Company Name" value="{$userData['company']}" disabled>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col input-group">
+                                <span class="input-group-text" id="addon-email">@</span>
+                                <input type="email" class="form-control" aria-describedby="addon-email" name="email" placeholder="Email@example.com" value="{$userData['email']}">
+                            </div>
+                            <div class="col input-group">
+                                <span class="input-group-text" id="addon-mobile">+63</span>
+                                <input type="tel" class="form-control" name="contact" id="mobile" aria-describedby="addon-mobile" placeholder="Mobile" value="{$userData['contact']}">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <input type="password" aria-label="Password" name="password" class="form-control" placeholder="Change Password">
+                            </div>
+                            <div class="col">
+                                <input type="password" aria-label="Password" id="conPwd" class="form-control" placeholder="Confirm Password">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="row">
-                        <div class="col mb-3">
-                            Student No. : <span id="stdno"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5">
-                        <input type="text" name="displayName" class="form-control" placeholder="Display Name">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" name="firstname" class="form-control" placeholder="First Name">
-                        </div>
-                        <div class="col">
-                            <input type="text" name="middlename" class="form-control" placeholder="Middle Name">
-                        </div>
-                        <div class="col">
-                            <input type="text" name="lastname" class="form-control" placeholder="Last Name">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" name="address" class="form-control" placeholder="Address">
-                        </div>
-                        <div class="col-2">
-                            <input type="text" name="city" class="form-control" placeholder="City">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col input-group">
-                            <span class="input-group-text" id="addon-course">Course</span>
-                            <select name="course" id="courseDD" class="form-control" aria-describedby="addon-course">
-                                <option hidden>-Select Course-</option>
-                            </select>
-                        </div>
-                        <div class="col input-group">
-                            <span class="input-group-text" id="addon-year">Batch</span>
-                            <select class="form-control" aria-describedby="addon-year" name="batch" id="year">
-                                <option hidden>-Select Batch Graduated-</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <select name="gender" class="form-control">
-                                <option hidden>-Select Gender-</option>
-                                <option value="0">Male</option>
-                                <option value="1">Female</option>
-                            </select>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <select name="employmentStatus" id="status" class="form-control">
-                                <option hidden>-Select Employement Status-</option>
-                                <option value="0">Unemployed</option>
-                                <option value="1">Employed</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <input type="text" name="position" class="form-control emplyStat" placeholder="Position" disabled>
-                        </div>
-                        <div class="col">
-                            <input type="text" name="company" class="form-control emplyStat" placeholder="Company Name" disabled>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col input-group">
-                            <span class="input-group-text" id="addon-email">@</span>
-                            <input type="email" class="form-control" aria-describedby="addon-email" name="email" placeholder="Email@example.com">
-                        </div>
-                        <div class="col input-group">
-                            <span class="input-group-text" id="addon-mobile">+63</span>
-                            <input type="tel" class="form-control" name="contact" id="mobile" aria-describedby="addon-mobile" placeholder="Mobile">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <input type="password" aria-label="Password" name="password" class="form-control" placeholder="Change Password">
-                        </div>
-                        <div class="col">
-                            <input type="password" aria-label="Password" id="conPwd" class="form-control" placeholder="Confirm Password">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <input type="submit" class="btn btn-primary" value="Submit">
-        </form>
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+            HTML;
+        endif;
+        ?>
     </div>
 </div>
 <script src="js/token.js"></script>
@@ -148,11 +180,10 @@ const userData = [];
    
   }
     
-
 var ddlYears = document.getElementById("year");
 var currentYear = (new Date()).getFullYear();
 
-for (var i = 1950; i <= currentYear; i++) {
+for (var i = 2000; i <= currentYear; i++) {
     var option = document.createElement("OPTION");
     option.innerHTML = i;
     option.value = i;
@@ -160,11 +191,11 @@ for (var i = 1950; i <= currentYear; i++) {
 }
 
 $('#mobile').keydown(function(event) {
-    if(!isNaN(event.key) || event.key === 'Backspace') {
-        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+    if (!isNaN(event.key) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        if ($(this).val().length >= 10 && event.key !== 'Backspace' && event.key !== 'Delete' || event.keyCode === 32) {
             event.preventDefault();
         }
-    }else{
+    } else if (event.keyCode !== 32) {
         event.preventDefault();       
     }
 })
@@ -255,16 +286,16 @@ function fetchCoursesData() {
         })
         .catch(error => console.error('Error fetching alumni data:', error));
 
-    const userFetch = fetch('php/users.php')
-        .then(response => response.json())
-        .then(data => {
+        // const userFetch = fetch('php/users.php')
+        //     .then(response => response.json())
+        //     .then(data => {
 
-        updateuserData(data);
-        })
-        .catch(error => console.error('Error fetching userData data:', error));
+        //     updateuserData(data);
+        //     })
+        //     .catch(error => console.error('Error fetching userData data:', error));
 
-    Promise.all([courseFetch, alumniFetch, userFetch])
-    .then(() => profileData());
+        // Promise.all([courseFetch, alumniFetch, userFetch])
+        // .then(() => profileData());
 }
 
 function courseDropdownData() {
@@ -278,34 +309,34 @@ function courseDropdownData() {
     });
 }
 
-function profileData(){
-    let user = JSON.parse(sessionStorage.user || null);
+// function profileData(){
+//     let user = JSON.parse(sessionStorage.user || null);
 
-    const profile = alumniData.find(alumni => alumni.id === user.id);
+//     const profile = alumniData.find(alumni => alumni.id === user.id);
 
-    $('#stdno').html(profile.student_number);
-    $('input[name="id"]').val(user.id);
-    $('input[name="firstname"]').val(user.firstname);
-    $('input[name="middlename"]').val(profile.middlename);
-    $('input[name="lastname"]').val(profile.lastname);
-    $('input[name="city"]').val(profile.city);
-    $('select[name="gender"]').val(profile.gender);
-    $('input[name="address"]').val(profile.address);
-    $('select[name="course"]').val(profile.course);
-    $('select[name="employmentStatus"]').val(profile.status);
-    $('input[name="position"]').val(profile.position);
-    $('input[name="comapny"]').val(profile.comapny);
-    $('#imageHolder').attr('src', profile.photo  || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
-    $('select[name="batch"]').val(profile.batch);
+//     $('#stdno').html(profile.student_number);
+//     $('input[name="id"]').val(user.id);
+//     $('input[name="firstname"]').val(user.firstname);
+//     $('input[name="middlename"]').val(profile.middlename);
+//     $('input[name="lastname"]').val(profile.lastname);
+//     $('input[name="city"]').val(profile.city);
+//     $('select[name="gender"]').val(profile.gender);
+//     $('input[name="address"]').val(profile.address);
+//     $('select[name="course"]').val(profile.course);
+//     $('select[name="employmentStatus"]').val(profile.status);
+//     $('input[name="position"]').val(profile.position);
+//     $('input[name="comapny"]').val(profile.comapny);
+//     $('#imageHolder').attr('src', profile.photo  || 'https://www.freeiconspng.com/uploads/no-image-icon-6.png');
+//     $('select[name="batch"]').val(profile.batch);
 
-    $('input[name="email"]').val(user.email);
-    $('input[name="contact"]').val(user.contact);
+//     $('input[name="email"]').val(user.email);
+//     $('input[name="contact"]').val(user.contact);
 
-    $('input[name="displayName"]').val(user.displayName);
-    if(profile.photo !== null){
-    profileImage.src = profile.photo
-    }
-}
+//     $('input[name="displayName"]').val(user.displayName);
+//     if(profile.photo !== null){
+//     profileImage.src = profile.photo
+//     }
+// }
 
 $(document).ready(function(e) {
   $('#profileAccount').on('submit',function(e){
@@ -327,11 +358,10 @@ $(document).ready(function(e) {
           console.log(data.error)
         }else{
           console.log(data)
-          sessionStorage.clear();
           showMessage('success','Updating profile please wait.');
           setInterval(() => {
-            data.authToken = generateToken(data.email);
-            sessionStorage.user = JSON.stringify(data);
+            // data.authToken = generateToken(data.email);
+            // sessionStorage.user = JSON.stringify(data);
             location.reload()
           }, 5000);
         }

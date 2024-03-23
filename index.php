@@ -14,6 +14,7 @@
   <!-- Local css/style.css -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/calendarDisplay.css">
+  <link rel="stylesheet" href="css/chatbox.css">
 
   <!-- Data Tables & jquery 3.6.0 -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -24,6 +25,20 @@
 <body>
 <ul class="notifications"></ul>
 <?php 
+  session_start();
+  if (isset($_SESSION['user_info'])){
+     $userData = $_SESSION['user_info'];
+     $userId = json_encode($userData['id']);
+     echo "<script>
+      var userId = {$userId};
+      </script>";
+  }else{
+    echo "<script>
+      var userId;
+      </script>";
+  }
+   
+
   include 'db/dbcon.php';
   include 'nav.php';
 
@@ -31,12 +46,26 @@
   include $page.'.php';
 
 ?>
+<!-- <div id="chat"></div> -->
+<!-- <div id="chat_box" role="button">
+  <i class="fa-brands fa-facebook-messenger"></i>
+</div> -->
 <footer class="bg-dark">
-  <h6 class="text-white" style="color: white;">Contact Us:</h6>
-  <span class="systemContact text-white"></span>
-  <p class="systemEmail text-white"></p>
+  <div class="row">
+    <div class="col">
+      <h6 class="text-white" style="color: white;">Contact Us:</h6>
+      <span class="systemContact text-white"></span>
+      <p class="systemEmail text-white"></p>
+    </div>
+    <div class="col">
+      <!-- <h6><a href="index.php?page=term_condition" class="text-white">Term & Condition</a></h6> -->
+      <h6><a href="index.php?page=privacy_policy" class="text-white">Privacy Policy</a></h6>
+      <!-- <h6><a href="index.php?page=cookie_policy" class="text-white">Cookie Policy</a></h6> -->
+    </div>
+  </div>
 </footer>
 </body>
 </html>
 <script src="js/systemSetting.js"></script>
 <script src="js/showMessage.js"></script>
+<script src="js/chatSupport.js"></script>

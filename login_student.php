@@ -25,6 +25,7 @@ include 'db/dbcon.php';
 <body style="background: white;">
 
     <ul class="notifications"></ul>
+    <div id="agreement" class="popup"></div>
     <!-- Login Form -->
     <div class="card box-form" id="login-form">
         <div class="logo">
@@ -43,7 +44,7 @@ include 'db/dbcon.php';
             <div class="d-grid gap-2 col-6 mx-auto">
                 <button type="button" class="btn btn-primary" id="submit-login">Login</button>
                 <button type="button" class="btn btn-danger" id="back">Back</button>
-                <!-- <a href="#" id="forgetPassword">Forget password</a> -->
+                <a href="#" id="forgetPassword">Forget password</a>
                 <a href="#" id="sign-up">Register</a>
             </div>
         </form>
@@ -77,7 +78,7 @@ include 'db/dbcon.php';
         <form>
             <div class="mb-3 input-group">
                 <span class="input-group-text" id="addon-number">Student No.</span>
-                <input type="text" class="form-control" id="student_number" aria-describedby="addon-number">
+                <input type="text" inputmode="numeric" pattern="[0-9]+" class="form-control" id="student_number" aria-describedby="addon-number" placeholder="ex. (1000001)">
             </div>
             <div class="mb-3">
                 <select id="gender" class="form-control">
@@ -100,9 +101,9 @@ include 'db/dbcon.php';
                 <input type="tel" class="form-control" id="mobile" aria-describedby="addon-mobile" placeholder="Mobile">
             </div>
             <div class="mb-3 input-group">
-            <span class="input-group-text" id="addon-course">Course</span>
+            <span class="input-group-text" id="addon-course">Program</span>
                 <select id="course" class="form-control" aria-describedby="addon-course">
-                    <option hidden>-Select Course-</option>
+                    <option hidden>-Select Program-</option>
                     <?php
                     $result1 = mysqli_query($conn,'SELECT * FROM `courses`');
                     if(mysqli_num_rows($result1) > 0){
@@ -116,9 +117,9 @@ include 'db/dbcon.php';
                 </select>
             </div>
             <div class="mb-3 input-group">
-                <span class="input-group-text" id="addon-year">Batch</span>
+                <span class="input-group-text" id="addon-year">Year Graduated</span>
                 <select class="form-control" aria-describedby="addon-year" id="year">
-                    <option hidden>-Select Batch Graduated-</option>
+                    <option hidden>-Select Year Graduated-</option>
                 </select>
             </div>
             <div class="mb-3 input-group">
@@ -160,6 +161,7 @@ const emailLog = document.getElementById('emailLog');
 const pwdLog = document.getElementById('pwdLog');
 const conPwd = document.getElementById('conPwd');
 const emailForget = document.getElementById('emailForget');
+const agreement_popup = document.getElementById('agreement');
 
 var messageText = document.querySelector('#messageText');
 var messagePlaceholder = document.querySelector('#messageBox');
@@ -176,7 +178,7 @@ window.onload = () => {
     var ddlYears = document.getElementById("year");
     var currentYear = (new Date()).getFullYear();
 
-    for (var i = 1950; i <= currentYear; i++) {
+    for (var i = 2000; i <= currentYear; i++) {
     var option = document.createElement("OPTION");
     option.innerHTML = i;
     option.value = i;
@@ -186,19 +188,23 @@ window.onload = () => {
 
 
 $('#mobile').keydown(function(event) {
-    if(!isNaN(event.key) || event.key === 'Backspace') {
-        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+    if (!isNaN(event.key) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        if ($(this).val().length >= 10 && event.key !== 'Backspace' && event.key !== 'Delete' || event.keyCode === 32) {
             event.preventDefault();
         }
-    }else{
+    } else if (event.keyCode !== 32) {
         event.preventDefault();       
     }
 })
 
 $('#student_number').keydown(function(event) {
-    if(isNaN(event.key) && event.key !== 'Backspace') {
-    event.preventDefault();
-  }
+    if (!isNaN(event.key) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        if ($(this).val().length >= 7 && event.key !== 'Backspace' && event.key !== 'Delete' || event.keyCode === 32) {
+            event.preventDefault();
+        }
+    } else if (event.keyCode !== 32) {
+        event.preventDefault();       
+    }
 })
 
 $('#sign-up').click(function() {
@@ -227,10 +233,24 @@ $(document).ready(function() {
     var numbers = /[0-9]/g;
     var upperCaseLetters = /[A-Z]/g;
     var lowerCaseLetters = /[a-z]/g;
+
+    emailLog.addEventListener("keypress", function(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+            document.getElementById("submit-login").click();
+        }
+    });
+    pwdLog.addEventListener("keypress", function(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+            document.getElementById("submit-login").click();
+        }
+    });
     //login
   $('#submit-login').click(function() {
-    console.log('Click Login.');
-    if(!emailLog.value.length || !pwdLog.value.length){
+    console.log('Click first login agrement show.');
+
+    if(!emailLog.value.trim() || !pwdLog.value.trim()){
         console.log('No Input email and password.');
         showMessage('error','No Input email and password.');
     }else{
@@ -251,16 +271,16 @@ $(document).ready(function() {
                     showMessage('error',data.error);
                 }else{
                     console.log('Success data Recieve');
-                    if(!data.error){
-                        data.authToken = generateToken(data.email);
-                        sessionStorage.user = JSON.stringify(data);
-                        showMessage('success','Account successfully login.');
+                    // if(!data.error){
+                        // data.authToken = generateToken(data.email);
+                        // sessionStorage.user = JSON.stringify(data);
+                        showMessage('success',data.success );
                         setInterval(() => {
                         location.replace('index.php')
                         }, 1000);
-                    }else{
-                        showMessage('error',data.error);
-                    }
+                    // }else{
+                    //     showMessage('error',data.error);
+                    // }
                 }
             }
         })
@@ -276,7 +296,7 @@ $(document).ready(function() {
         console.log('Details are ready to process.');
         $.ajax({
             type: 'POST',
-            url: 'action.php?action=forgetPass',
+            url: 'php/action.php?action=forgetPass',
             data: {
                 email: emailForget.value,
             },
@@ -284,7 +304,11 @@ $(document).ready(function() {
                 console.log('Error: ', err);
             },
             success: function(data) {
-                console.log('Success data Recieve:', data);
+                if(data.success){
+                    showMessage('info', data.success);
+                }else{
+                    showMessage('error', data.error);
+                }
             }
         })
     }
@@ -394,38 +418,112 @@ function registerCheck(){
         showMessage('error','Email has already used.')
         console.log('Email has already used.');
     }else{
-        console.log('Details are ready to process.');
-        $.ajax({
-            type: 'POST',
-            url: 'php/action.php?action=register',
-            data: {
-                stdno: student_number.value,
-                gender: gender.value,
-                firstname: firstname.value,
-                middlename: middlename.value,
-                lastname: lastname.value,
-                email: emailReg.value,
-                password: pwdReg.value,
-                mobile: mobile.value,
-                course: course.value,
-                batch: batch.value,
-                userType: 'student',
-                type: '1'
-            },
-            error: err => {
-                console.log('Error: ', err);
-            },
-            success: function(data) {
-                console.log('Success data Recieve');
-                if(data.error){  
-                    console.log(data.error);
-                    showMessage('error',data.error);
-                }else{
-                    setTimeout(function(){
-                        showMessage('success', data);
-                        location.reload();
-                    },500)
-                }
+        console.log('Agreement show.');
+        agreement_popup.innerHTML = '';
+
+        const popupHTML =`
+            <div class="popup-content">
+                <span class="close" id="closePopup">&times;</span>
+                <h5>Registration Agreement:</h5>
+                <div class="scrollable-div">
+                    <h6>Registration Agreement for Alumni Management System</h6>
+                    <hr>
+                    <p>Welcome to the Alumni Management System of School of computer science. By proceeding with the registration process, you acknowledge and agree to the following terms and conditions:</p>
+                    <ol>
+                    <li>
+                        <strong>Information Accuracy:</strong>
+                        <ul>
+                            <li>You agree to provide accurate and up-to-date information during the registration process, including but not limited to your full name, email address, contact number, graduation year, and current occupation.</li>
+                            <li>You understand that any false or misleading information provided may result in the suspension or termination of your account.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Privacy and Data Usage:</strong>
+                        <ul>
+                            <li>You consent to the collection, storage, and use of your personal information for alumni-related activities and communications.</li>
+                            <li>Your information will be kept confidential and will not be shared with third parties without your explicit consent, except where required by law.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Account Security:</strong>
+                        <ul>
+                            <li>You are responsible for maintaining the confidentiality of your account credentials (username and password).</li>
+                            <li>You agree not to share your account credentials with others or allow unauthorized access to your account.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Acceptable Use:</strong>
+                        <ul>
+                            <li>You agree to use the Alumni Management System in a manner consistent with its intended purpose, including but not limited to networking with fellow alumni, accessing resources, and participating in alumni events.</li>
+                            <li>You agree not to engage in any unlawful, abusive, or fraudulent activities on the platform.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Communication:</strong>
+                        <ul>
+                            <li>You consent to receiving communications from School of computer science via email, phone, or other electronic means for alumni-related purposes, including announcements, newsletters, and event invitations.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Modification of Terms:</strong>
+                        <ul>
+                            <li>School of computer science reserves the right to modify or update these terms and conditions at any time. Notification of changes will be provided via email or through the Alumni Management System.</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p>If you have any questions or concerns regarding this agreement, please contact us at companyHr@gmail.com.</p>
+                <p>Thank you for joining the School of computer science alumni community!</p>
+                </div>
+                <input type="checkbox" id="agree" required>
+                <span for="agree">I have read, understood, and agree to abide by the terms and conditions outlined in this registration agreement.</span><br>
+                <button id="confirmButton" type="button" class="btn btn-primary">Confirm</button>
+            </div>
+        `;
+        agreement_popup.insertAdjacentHTML('beforeend', popupHTML);
+        agreement_popup.style.display = "block";
+        $("#closePopup").click(function(){
+            agreement_popup.style.display = "none";
+        });
+        $('#confirmButton').click(function(){
+            const agreeOnTerm = document.getElementById('agree');
+            if(agreeOnTerm.checked){
+                console.log('User Agree proceed on registration');
+                $.ajax({
+                    type: 'POST',
+                    url: 'php/action.php?action=register',
+                    data: {
+                        stdno: student_number.value,
+                        gender: gender.value,
+                        firstname: firstname.value,
+                        middlename: middlename.value,
+                        lastname: lastname.value,
+                        email: emailReg.value,
+                        password: pwdReg.value,
+                        mobile: mobile.value,
+                        course: course.value,
+                        batch: batch.value,
+                        userType: 'student',
+                        type: '1'
+                    },
+                    error: err => {
+                        console.log('Error: ', err);
+                    },
+                    success: function(data) {
+                        console.log('Success data Recieve');
+                        if(data.error){  
+                            console.log(data.error);
+                            showMessage('error',data.error);
+                        }else{
+                            setTimeout(function(){
+                                showMessage('success', data);
+                                location.reload();
+                            },1000)
+                        }
+                    }
+                })
+            }else{
+                console.log('User not Agree on term and agreement show message to accept the term and agreement.');
+                showMessage('info','Please check the checkbox to confirm registration agreement.');
             }
         })
     }

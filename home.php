@@ -58,7 +58,43 @@
 
 <div class="container-fluid" style="margin: 1rem 0rem;">
   <ul class="nav nav-tabs" id="items">
-    
+    <?php
+      if (!empty($userData)){
+        echo <<<HTML
+          <li class="nav-item" role="presentation">
+            <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+            data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+            data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-black" id="alumni-tab" data-bs-toggle="tab" 
+            data-bs-target="#alumni" type="button" role="tab" aria-controls="alumni" aria-selected="false">Alumni</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-black" id="job-tab" data-bs-toggle="tab" 
+            data-bs-target="#job" type="button" role="tab" aria-controls="ob" aria-selected="false">Job List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-black" id="forum-tab" data-bs-toggle="tab" 
+            data-bs-target="#forum" type="button" role="tab" aria-controls="forum" aria-selected="false">Forum</a>
+          </li>
+        HTML;
+      } else {
+        echo <<<HTML
+          <li class="nav-item" role="presentation">
+            <a class="nav-link text-black active" aria-current="page" id="event-tab" data-bs-toggle="tab" 
+            data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-black" id="gallery-tab" data-bs-toggle="tab" 
+            data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+          </li>
+        HTML;
+      }
+    ?>
   </ul>
   <section class="tab-content area-content" id="myTabContent">
     <!-- Event Tabs -->
@@ -91,6 +127,18 @@
       </div>
       <script src="js/eventCalendar.js"></script>
     </div>
+    <!-- Gallery Tabs  -->
+    <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
+      <div class="container-fluid px-4">
+        <div class="row g-5 card-row" id="galleryList">
+          
+        </div>
+        <div id="galleryView">
+      
+        </div>
+      </div>
+      <script src="js/galleryView.js"></script>
+    </div>
     <!-- Alumni Tabs  -->
     <div class="tab-pane fade" id="alumni" role="tabpanel" aria-labelledby="alumni-tab">
       <div class="row" id="alumniList">
@@ -113,9 +161,9 @@
                 </select>
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text" id="addonCourse">Course</span>
+                <span class="input-group-text" id="addonCourse">Program</span>
                 <select id="course" aria-describedby="addonCourse" class="form-control">
-                  <option>-Select Course-</option>
+                  <option>-Select Program-</option>
                 </select>
               </div>
               <div class="input-group mb-3">
@@ -144,18 +192,6 @@
         
       </div>
       <script src="js/alumnisView.js"></script>
-    </div>
-    <!-- Gallery Tabs  -->
-    <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
-      <div class="container-fluid px-4">
-        <div class="row g-5 card-row" id="galleryList">
-          
-        </div>
-        <div id="galleryView">
-      
-        </div>
-      </div>
-      <script src="js/galleryView.js"></script>
     </div>
     <!-- Job Tabs  -->
     <div class="tab-pane fade" id="job" role="tabpanel" aria-labelledby="job-tab">
