@@ -29,7 +29,7 @@
                                   <th scope="col">First Name</th>
                                   <th scope="col">Middle Name</th>
                                   <th scope="col">Last Name</th>
-                                  <th scope="col">Course</th>
+                                  <th scope="col">Program</th>
                                   <th scope="col">Batch</th>
                                   <th scope="col">Activity</th>
                                 </tr>
@@ -168,7 +168,7 @@ function updateSource(){
                   </div>
                   <hr>
                   <div class="row g-0">
-                    <div class="col">Course: </div>
+                    <div class="col">Program: </div>
                     <div class="col-md-10"><h5><b>${data.course}</b></h5></div>
                   </div>
                   <div class="row g-0">

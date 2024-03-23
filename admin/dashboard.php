@@ -21,7 +21,7 @@
                                 
                             </div>
                             <div class="card-body">
-                                Courses
+                                Programs
                             </div>
                             </div>
                         </div>
@@ -48,13 +48,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row row-cols-1">
+                      <canvas id="Chart" style="padding: 1rem 2rem; height: 25rem;"></canvas>
+                    </div>
                 </div>
   <div class="card" style="margin-top: 0.5rem;">
     <div class="card-header">
       <span class="ms-1 d-sm-inline">Restriction & Approval</span>
     </div>
     <div class="card-body">
-      <!-- <canvas id="myChart" style="height:3rem; width: auto; max-width: 80rem;"></canvas> -->
+      
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-alumni-res-tab" data-bs-toggle="tab" data-bs-target="#nav-alumni-res" type="button" role="tab" aria-controls="nav-alumni-res" aria-selected="true">Alumni</button>
@@ -130,7 +133,7 @@
       </div>
     </div>
   </div>
-<!-- <script src="../js/jschart.js"></script> -->
+<script src="../js/jschart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   
@@ -141,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const commentData = [];
   const forumData = [];
   const adminData = [];
-  
   function updateUserData(data) {
       
   userData.length = 0; 
@@ -326,7 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(() => updateForumSource());
     
     userPromise.then(() => accountRestriction());
-    
   }
 
   function updateDatabaseSource(){
@@ -371,9 +372,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       alumniData.forEach( data => {
         const alumniCourse = courseData.find(course => course.id === data.course);
-        var jobCreateStatus = `<button class="${data.jobc === '0' ? 'disable-btn' : 'active-btn'} jobCreateStatus" data-status="${data.jobc === '0' ? 1 : 0}" data-id="${data.id}">${data.jobc === '0' ? 'Disable' : 'Undisable'}</button>`;
-        var forumCreateStatus = `<button class="${data.forumc === '0' ? 'disable-btn' : 'active-btn'} forumCreateStatus" data-status="${data.forumc === '0' ? 1 : 0}" data-id="${data.id}">${data.forumc === '0' ? 'Disable' : 'Undisable'}</button>`;
-        var commentCreateStatus = `<button class="${data.commentc === '0' ? 'disable-btn' : 'active-btn'} commentCreateStatus" data-status="${data.commentc === '0' ? 1 : 0}" data-id="${data.id}">${data.commentc === '0' ? 'Disable' : 'Undisable'}</button>`;
+        var jobCreateStatus = `<button class="${data.jobc === '0' ? 'disable-btn' : 'active-btn'} jobCreateStatus" data-status="${data.jobc === '0' ? 1 : 0}" data-id="${data.id}">${data.jobc === '0' ? 'Disable' : 'Enable'}</button>`;
+        var forumCreateStatus = `<button class="${data.forumc === '0' ? 'disable-btn' : 'active-btn'} forumCreateStatus" data-status="${data.forumc === '0' ? 1 : 0}" data-id="${data.id}">${data.forumc === '0' ? 'Disable' : 'Enable'}</button>`;
+        var commentCreateStatus = `<button class="${data.commentc === '0' ? 'disable-btn' : 'active-btn'} commentCreateStatus" data-status="${data.commentc === '0' ? 1 : 0}" data-id="${data.id}">${data.commentc === '0' ? 'Disable' : 'Enable'}</button>`;
         const tableHTMLData = `
         <tr>
           <th scope="col" class="text-center">${i++}</th>
@@ -556,8 +557,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       
     })
-    $('#usersTable').DataTable();
     $(document).ready( function() {
+      $('#usersTable').DataTable();
       $('.accountStatus').click( function(event) {
         console.log('Account Status Button Click. ID:',event.target.getAttribute('data-id'));
         $.ajax({
@@ -585,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
       })
     })
-    
+
  }
 
  function updateForumSource(){
@@ -824,5 +825,6 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchData();
 
     topicCreateRestriction();
+    
 })
 </script>

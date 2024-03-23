@@ -36,6 +36,11 @@
                                 <label for="aboutContent" class="form-label">About Content</label>
                                 <textarea class="form-control" name="aboutContent" rows="3"></textarea>
                             </div>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="defautPass" class="form-label">Default Password for users Forget Password:</label>
+                                <input type="text" class="form-control" name="defautPass">
+                            </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <input type="submit" class="btn btn-primary" name="submit" value="Save">
                             </div>
@@ -59,7 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
           contact: system.contact,
           logo: system.logo,
           aboutimage: system.aboutimage,
-          aboutcontent: system.aboutcontent
+          aboutcontent: system.aboutcontent,
+          systemDefaultPass: system.systemDefaultPass
         });
       });
   }
@@ -84,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
       $('#image1').attr('src',data.logo);
       $('#image2').attr('src',data.aboutimage);
       $('textarea[name="aboutContent"]').html(data.aboutcontent);
+      $('input[name="defautPass"]').val(data.systemDefaultPass);
     })
     
   }
@@ -110,9 +117,9 @@ $(document).ready(function(e) {
         const logo = $('input[name="logo"]').val();
         const aboutimage = $('input[name="aboutImage"]').val();
         const aboutcontent = $('textarea[name="aboutContent"]').val();
+        const defaultPassword = $('input[name="defautPass"]').val();
 
-
-        if(!systemname || !email || !contact || !aboutcontent) {
+        if(!systemname || !email || !contact || !aboutcontent || !defaultPassword) {
             console.log('Please input all details.');
         } else {
             $.ajax({

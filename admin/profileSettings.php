@@ -70,11 +70,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
 $('#mobile').keydown(function(event) {
-    if(!isNaN(event.key) || event.key === 'Backspace') {
-        if($(this).val().length >= 10 && event.key !== 'Backspace'){
+    if (!isNaN(event.key) || event.key === 'Backspace' || event.key === 'Delete' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        if ($(this).val().length >= 10 && event.key !== 'Backspace' && event.key !== 'Delete' || event.keyCode === 32) {
             event.preventDefault();
         }
-    }else{
+    } else if (event.keyCode !== 32) {
         event.preventDefault();       
     }
 })

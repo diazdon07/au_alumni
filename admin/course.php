@@ -10,7 +10,7 @@
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Course</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Program</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <form>
@@ -35,7 +35,7 @@
                               
                                 <tr>
                                   <th scope="col">#</th>
-                                  <th scope="col">Course</th>
+                                  <th scope="col">Program</th>
                                   <th scope="col">Activity</th>
                                 </tr>
                               

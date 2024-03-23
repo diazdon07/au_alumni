@@ -34,7 +34,7 @@
             <thead>
                 <th class="text-center" style="min-width: 1.2rem; max-width: 1.5rem;">No.</th>
                 <th scope="col">Fullname</th>
-                <th scope="col">Course</th>
+                <th scope="col">Program</th>
                 <th scope="col">Student no.</th>
                 <th scope="col" class="text-center" style="width: 70px;">Year Graduate</th>
                 <th scope="col">Employment Status</th>

@@ -18,7 +18,7 @@ include '../db/dbcon.php';
   
   <!-- Data Tables & jquery 3.6.0 -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 </head>
@@ -97,7 +97,7 @@ window.onload = () => {
                             </li>
                             <li>
                                 <a href="index.php?page=course" class="nav-link nav-course align-middle px-0" id="course">
-                                    <i class="fa-solid fa-graduation-cap"></i> <span class="ms-1 d-none d-sm-inline">Course List</span>
+                                    <i class="fa-solid fa-graduation-cap"></i> <span class="ms-1 d-none d-sm-inline">Program List</span>
                                 </a>
                             </li>
                             <li>
@@ -171,7 +171,7 @@ window.onload = () => {
                             </li>
                             <li>
                                 <a href="index.php?page=course" class="nav-link nav-course align-middle px-0" id="course">
-                                    <i class="fa-solid fa-graduation-cap"></i> <span class="ms-1 d-none d-sm-inline">Course List</span>
+                                    <i class="fa-solid fa-graduation-cap"></i> <span class="ms-1 d-none d-sm-inline">Program List</span>
                                 </a>
                             </li>
                             <li>
