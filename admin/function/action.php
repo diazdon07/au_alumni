@@ -4,6 +4,8 @@ header('Content-Type: application/json');
 if(isset($_GET['action'])){
     $action = $_GET['action'];
     $dataArray = array();
+    $maxImg = 300 * 1024 * 1024;
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
     extract($_POST);
 
     // add courses
@@ -50,7 +52,7 @@ if(isset($_GET['action'])){
     if($action === 'System'){
 
       $values = array();
-      $dataType = "ssss";
+      $dataType = "sssss";
       $ss1 = "";
       $ss2 = "";
       $update1 = "";
@@ -64,14 +66,18 @@ if(isset($_GET['action'])){
       $values['email'] = $email;
       $values['contact'] = $contact;
       $values['aboutcontent'] = $aboutContent;
+      $values['defaultPassword'] = $defautPass;
         
       if(isset($_FILES['logo'])&&is_uploaded_file($_FILES['logo']['tmp_name'])){
         $imgData1 = file_get_contents($_FILES['logo']['tmp_name']);
         $imgType1 = $_FILES['logo']['type'];
+        $imgSize1 = $_FILES['image']['size'];
 
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
           if (!in_array($imgType1, $allowedTypes)) {
             echo json_encode(array('error' => 'Invalid file1 type.'));
+            exit;
+        } elseif ($imgSize1 > $maxImg){
+            echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
             exit;
         }
 
@@ -86,11 +92,14 @@ if(isset($_GET['action'])){
       if(isset($_FILES['aboutImage'])&&is_uploaded_file($_FILES['aboutImage']['tmp_name'])){
         $imgData2 = file_get_contents($_FILES['aboutImage']['tmp_name']);
         $imgType2 = $_FILES['aboutImage']['type'];
+        $imgSize2 = $_FILES['image']['size'];
 
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($imgType2, $allowedTypes)) {
           echo json_encode(array('error' => 'Invalid file2 type.'));
           exit;
+        } elseif ($imgSize2 > $maxImg){
+            echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
+            exit;
         }
 
         $imgSet2 = ',aboutData = ?, aboutType = ?';
@@ -105,10 +114,10 @@ if(isset($_GET['action'])){
       
         if(mysqli_num_rows($result) > 0){
           $values['id'] = $id;
-          $stmt = $conn->prepare('UPDATE `system` SET systemname = ?, email = ?, contact = ?, aboutcontent = ? '.$imgSet1.$imgSet2.'  WHERE id = ?');
+          $stmt = $conn->prepare('UPDATE `system` SET systemname = ?, email = ?, contact = ?, aboutcontent = ?, defaultPassword = ? '.$imgSet1.$imgSet2.'  WHERE id = ?');
           $stmt->bind_param($dataType.$ss1.$ss2.'i', ...array_values($values));
         }else{
-          $stmt = $conn->prepare('INSERT INTO `system` (systemname, email, contact, aboutcontent '.$imgIns1.$imgIns2.' ) VALUES (?,?,?,?'.$update1.$update2.')');
+          $stmt = $conn->prepare('INSERT INTO `system` (systemname, email, contact, aboutcontent, defaultPassword '.$imgIns1.$imgIns2.' ) VALUES (?,?,?,?,?'.$update1.$update2.')');
           $stmt->bind_param($dataType.$ss1.$ss2, ...array_values($values));
         }
 
@@ -126,12 +135,16 @@ if(isset($_GET['action'])){
         if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
                 exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
+                exit;
             }
+
             $stmt = $conn->prepare('INSERT INTO `events` (title, imgData, imgType, schedule, timestart, timeend, location, description) VALUES (?,?,?,?,?,?,?,?)');
             $stmt->bind_param('ssssssss', $title, $imgData, $imgType, $schedule, $timeStart, $timeEnd, $location, $description);
 
@@ -164,12 +177,16 @@ if(isset($_GET['action'])){
         if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
                 exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
+                exit;
             }
+            
             $imgSet = ', imgData = ?, imgType = ?';
             $values['aboutData'] = $imgData;
             $values['aboutType'] = $imgType;
@@ -198,10 +215,13 @@ if(isset($_GET['action'])){
         if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
                 exit;
             }
 
@@ -235,10 +255,13 @@ if(isset($_GET['action'])){
         if(isset($_FILES['image'])&&is_uploaded_file($_FILES['image']['tmp_name'])){
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
+            $imgSize = $_FILES['image']['size'];
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
                 exit;
             }
             $imgSet = ', imgData = ?, imgType = ?';
@@ -456,10 +479,13 @@ if(isset($_GET['action'])){
         if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
-        
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            $imgSize = $_FILES['image']['size'];
+
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
+                exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
                 exit;
             }
             
@@ -617,12 +643,16 @@ if(isset($_GET['action'])){
         if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             $imgData = file_get_contents($_FILES['image']['tmp_name']);
             $imgType = $_FILES['image']['type'];
-        
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            $imgSize = $_FILES['image']['size'];
+
             if (!in_array($imgType, $allowedTypes)) {
                 echo json_encode(array('error' => 'Invalid file type.'));
                 exit;
+            } elseif ($imgSize > $maxImg){
+                echo json_encode(array('error' => 'File size exceeds the maximum allowed.'));
+                exit;
             }
+
             $imgSet = ",imgType, imgData";
             $dataType = "sssss";
             $stmQus = "?,?,?,?,?";
