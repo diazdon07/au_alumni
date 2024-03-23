@@ -1,0 +1,21 @@
+#chat_box{
+  color: dodgerblue;
+  position: fixed;
+  bottom: 2rem;
+  right: 50px;
+  z-index: 100;
+  font-size: 3rem;
+  text-shadow: 2px 2px 4px #686868b4;
+}
+.chat_form{
+  position: fixed;
+  width: 40rem;
+  height: 20rem;
+  bottom: 2rem;
+  right: 50px;
+  z-index: 100;
+  box-shadow: 2px 2px 4px #cbced1, -2px -2px 4px #fff;
+}
+.scrollable{
+  overflow-y: scroll;
+}

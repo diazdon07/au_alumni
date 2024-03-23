@@ -81,14 +81,15 @@ footer{
         -8px -8px 15px #fff;
 }
 
-.profileImg{
-  width: 3.5rem;
-  object-fit: cover;
-  border-radius: 50%;
+.profileImg {
+  width: 40px; /* Fixed width */
+  height: 40px; /* Fixed height */
+  object-fit: cover; /* Maintain aspect ratio */
+  border-radius: 50%; /* Make images circular */
   box-shadow: 0px 0px 3px #5f5f5f,
-      0px 0px 0px 4px gold,
-      3px 3px 15px grey,
-      -3px -3px 15px grey;
+              0px 0px 0px 4px gold,
+              3px 3px 15px grey,
+              -3px -3px 15px grey; /* Add box shadow */
 }
 
 .box-form{
@@ -370,4 +371,45 @@ footer{
     font-size: 1rem;
     margin-left: 20px;
   }
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.popup-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.scrollable-div {
+  width: auto; /* Adjust width as needed */
+  height: 200px; /* Adjust height as needed */
+  overflow-y: auto; /* This will enable vertical scroll */
+  border: 1px solid #ccc; /* Optional: Add border for visual clarity */
+  padding: 10px; /* Optional: Add padding to the content inside */
 }
